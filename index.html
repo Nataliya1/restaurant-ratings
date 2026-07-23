@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>i2g Map App</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#viewDiv">Skip to map</a>
+
+    <header class="app-header">
+      <h1>i2g Map App</h1>
+    </header>
+
+    <div class="app-body">
+      <aside class="control-panel" aria-label="Search, filters, and facility lists">
+        <div id="searchContainer" class="search-container"></div>
+
+        <section class="filter-section" aria-labelledby="restaurantsHeading">
+          <div class="section-header">
+            <button
+              type="button"
+              class="disclosure-btn"
+              id="restaurantsToggle"
+              aria-expanded="false"
+              aria-controls="restaurantsPanel"
+            >
+              <span class="disclosure-icon" aria-hidden="true">+</span>
+              <span id="restaurantsHeading">Restaurants</span>
+            </button>
+            <label class="map-toggle">
+              <input type="checkbox" id="showRestaurants" checked />
+              Show on map
+            </label>
+          </div>
+          <div id="restaurantsPanel" class="section-content" hidden>
+            <fieldset class="rating-legend">
+              <legend>Filter by rating</legend>
+              <label class="rating-item">
+                <input type="checkbox" class="rating-check" data-grade="A" checked />
+                <span class="swatch" style="background: rgb(90, 133, 90)" aria-hidden="true"></span>
+                A
+              </label>
+              <label class="rating-item">
+                <input type="checkbox" class="rating-check" data-grade="B" checked />
+                <span class="swatch" style="background: rgb(139, 224, 78)" aria-hidden="true"></span>
+                B
+              </label>
+              <label class="rating-item">
+                <input type="checkbox" class="rating-check" data-grade="C" checked />
+                <span class="swatch" style="background: rgb(239, 242, 61)" aria-hidden="true"></span>
+                C
+              </label>
+              <label class="rating-item">
+                <input type="checkbox" class="rating-check" data-grade="D" checked />
+                <span class="swatch" style="background: rgb(247, 184, 37)" aria-hidden="true"></span>
+                D
+              </label>
+              <label class="rating-item">
+                <input type="checkbox" class="rating-check" data-grade="F" checked />
+                <span class="swatch" style="background: rgb(255, 41, 26)" aria-hidden="true"></span>
+                F
+              </label>
+              <label class="rating-item">
+                <input type="checkbox" class="rating-check" data-grade="OTHER" checked />
+                <span class="swatch" style="background: rgb(170, 170, 170)" aria-hidden="true"></span>
+                Not rated / other
+              </label>
+            </fieldset>
+
+            <div class="list-filter">
+              <label for="restaurantNameFilter">Filter list by name</label>
+              <input type="search" id="restaurantNameFilter" placeholder="e.g. Diner" />
+            </div>
+            <p class="list-status" id="restaurantStatus" aria-live="polite"></p>
+            <ul class="facility-list" id="restaurantList"></ul>
+          </div>
+        </section>
+
+        <section class="filter-section" aria-labelledby="schoolsHeading">
+          <div class="section-header">
+            <button
+              type="button"
+              class="disclosure-btn"
+              id="schoolsToggle"
+              aria-expanded="false"
+              aria-controls="schoolsPanel"
+            >
+              <span class="disclosure-icon" aria-hidden="true">+</span>
+              <span id="schoolsHeading">Schools</span>
+            </button>
+            <label class="map-toggle">
+              <input type="checkbox" id="showSchools" checked />
+              Show on map
+            </label>
+          </div>
+          <div id="schoolsPanel" class="section-content" hidden>
+            <div class="list-filter">
+              <label for="schoolNameFilter">Filter list by name</label>
+              <input type="search" id="schoolNameFilter" placeholder="e.g. Elementary" />
+            </div>
+            <p class="list-status" id="schoolStatus" aria-live="polite"></p>
+            <ul class="facility-list" id="schoolList"></ul>
+          </div>
+        </section>
+
+        <section class="filter-section" aria-labelledby="mobileHeading">
+          <div class="section-header">
+            <button
+              type="button"
+              class="disclosure-btn"
+              id="mobileToggle"
+              aria-expanded="false"
+              aria-controls="mobilePanel"
+            >
+              <span class="disclosure-icon" aria-hidden="true">+</span>
+              <span id="mobileHeading">Mobile Food Trucks</span>
+            </button>
+          </div>
+          <div id="mobilePanel" class="section-content" hidden>
+            <p class="hint">Not mapped &mdash; this dataset has no location data, so results are list-only.</p>
+            <div class="list-filter">
+              <label for="mobileNameFilter">Filter list by name</label>
+              <input type="search" id="mobileNameFilter" placeholder="e.g. Taco" />
+            </div>
+            <p class="list-status" id="mobileStatus" aria-live="polite"></p>
+            <ul class="facility-list" id="mobileList"></ul>
+          </div>
+        </section>
+      </aside>
+
+      <main id="viewDiv" aria-label="Map"></main>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

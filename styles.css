@@ -1,0 +1,271 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: #f3f4f6;
+}
+
+*:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: #1f2937;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  height: 56px;
+  flex: 0 0 auto;
+  background: #1f2937;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.app-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.control-panel {
+  width: 340px;
+  flex: 0 0 340px;
+  overflow-y: auto;
+  background: #fff;
+  border-right: 1px solid #d1d5db;
+  padding: 0.75rem;
+  box-sizing: border-box;
+}
+
+.search-container {
+  margin-bottom: 0.75rem;
+}
+
+#viewDiv {
+  flex: 1;
+  min-height: 0;
+}
+
+.error-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  color: #b91c1c;
+  font-weight: 600;
+  text-align: center;
+}
+
+.filter-section {
+  border-top: 1px solid #e5e7eb;
+  padding: 0.5rem 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.disclosure-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  padding: 0.4rem 0.25rem;
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.disclosure-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid #6b7280;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.map-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.section-content {
+  padding: 0.5rem 0.25rem 0.75rem;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: #4b5563;
+  margin: 0 0 0.5rem;
+}
+
+.rating-legend {
+  border: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.rating-legend legend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  padding: 0;
+  margin-bottom: 0.25rem;
+}
+
+.rating-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.swatch {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  display: inline-block;
+}
+
+.list-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.list-filter input[type="search"] {
+  padding: 0.4rem;
+  border: 1px solid #9ca3af;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.list-status {
+  font-size: 0.8rem;
+  color: #4b5563;
+  margin: 0 0 0.35rem;
+}
+
+.facility-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+}
+
+.facility-list li {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.facility-list li:last-child {
+  border-bottom: none;
+}
+
+.facility-list li.empty {
+  padding: 0.5rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.facility-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  color: #111827;
+  cursor: pointer;
+}
+
+.facility-item:hover {
+  background: #f3f4f6;
+}
+
+.facility-detail {
+  padding: 0 0.5rem 0.5rem 1.25rem;
+  font-size: 0.8rem;
+  color: #374151;
+}
+
+@media (max-width: 720px) {
+  .app-body {
+    flex-direction: column;
+  }
+
+  .control-panel {
+    width: auto;
+    flex: 0 0 auto;
+    max-height: 45vh;
+    border-right: none;
+    border-bottom: 1px solid #d1d5db;
+  }
+
+  #viewDiv {
+    flex: 1 1 auto;
+    min-height: 250px;
+  }
+}
