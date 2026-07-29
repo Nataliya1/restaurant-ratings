@@ -11,17 +11,18 @@ export const SCHOOL_TOKEN = '20A';
 export const NAME_FIELD_RESTAURANT = 'est_name';
 export const NAME_FIELD_MOBILE = 'unit_name';
 
-// Colors copied from the web map's own uniqueValue renderer (field: rating) so the
-// legend/filter swatches always match what's actually drawn on the map.
+// `color` mirrors the fill color baked into images/rating-*.png (sampled from the icons
+// the county produced from the AGOL web map's point renderer), kept here only as reference
+// documentation — the filter ribbon renders the icons directly, not these values.
 export const RATING_GRADES = [
-  { value: 'A', label: 'A', color: [90, 133, 90] },
-  { value: 'B', label: 'B', color: [139, 224, 78] },
-  { value: 'C', label: 'C', color: [239, 242, 61] },
-  { value: 'D', label: 'D', color: [247, 184, 37] },
-  { value: 'F', label: 'F', color: [255, 41, 26] }
+  { value: 'A', label: 'A', color: [21, 67, 96] },
+  { value: 'B', label: 'B', color: [33, 97, 140] },
+  { value: 'C', label: 'C', color: [125, 102, 8] },
+  { value: 'D', label: 'D', color: [184, 92, 0] },
+  { value: 'F', label: 'F', color: [146, 43, 33] }
 ];
 
-export const OTHER_RATING = { value: 'OTHER', label: 'Not rated / other', color: [170, 170, 170] };
+export const OTHER_RATING = { value: 'OTHER', label: 'Not rated / other', color: [89, 89, 89] };
 
 // Set to '' to hide this source (search will then only match facility names, no address geocoding).
 export const CUSTOM_GEOCODER_URL = 'https://dcgis.org/server/rest/services/Geocoders/PointAddress_and_Street_Roles/GeocodeServer';
