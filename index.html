@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>i2g Map App</title>
+    <title>Restaurant Inspection Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
   </head>
@@ -11,128 +14,208 @@
     <a class="skip-link" href="#viewDiv">Skip to map</a>
 
     <header class="app-header">
-      <h1>i2g Map App</h1>
+      <img class="header-logo" src="./images/header-logo.png" alt="" />
+      <div class="app-header-text">
+        <h1>Restaurant Inspection Ratings</h1>
+        <p class="app-subtitle">Douglas County Health Department</p>
+      </div>
+
+      <div class="mobile-menu">
+        <button type="button" class="header-action hamburger-btn" id="menuToggle" aria-expanded="false" aria-controls="headerActionsMenu" aria-label="Open menu" title="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+          </svg>
+        </button>
+
+        <nav class="header-actions" id="headerActionsMenu" aria-label="Help and contact links">
+        <div class="dropdown">
+          <button type="button" class="header-action" id="contactToggle" aria-expanded="false" aria-controls="contactPanel" aria-label="Contact us" title="Contact us">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 7l9 6 9-6" />
+            </svg>
+            <span class="header-action-label">Contact us</span>
+          </button>
+          <div id="contactPanel" class="dropdown-panel header-dropdown-panel" hidden>
+            <a class="dropdown-link" href="https://survey123.arcgis.com/share/acf54b3b7de64b87a4ec5996ba80c833?hide=field:source_website" target="_blank" rel="noopener noreferrer">
+              Technical / Map Questions
+              <span class="visually-hidden"> (opens in a new tab)</span>
+            </a>
+            <a class="dropdown-link" href="https://www.douglascountyhealth.com/component/contact/contact/25-russ-hadan?catid=81&Itemid=186" target="_blank" rel="noopener noreferrer">
+              Inspection / Rating Questions
+              <span class="visually-hidden"> (opens in a new tab)</span>
+            </a>
+          </div>
+        </div>
+        <button type="button" class="header-action" id="infoToggle" aria-expanded="true" aria-controls="controlPanel" aria-label="Hide the about panel" title="Hide the about panel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <line x1="12" y1="11" x2="12" y2="16" />
+            <circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="header-action-label">About</span>
+        </button>
+        <a class="header-action" href="#" aria-label="Frequently asked questions (FAQ)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1.3 1-1.3 1.9v.3" />
+            <circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="header-action-label">FAQ</span>
+        </a>
+        <a class="header-action" href="#" aria-label="Report an issue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M5 3v18" />
+            <path d="M5 4h11l-2.5 3.5L16 11H5" />
+          </svg>
+          <span class="header-action-label">Report an issue</span>
+        </a>
+        </nav>
+      </div>
     </header>
 
+    <div class="rating-ribbon" role="region" aria-label="Facility filters and lists">
+      <fieldset class="rating-legend">
+        <legend>Filter by rating</legend>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="A" checked />
+          <span class="swatch" style="background: rgb(90, 133, 90)" aria-hidden="true"></span>
+          A
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="B" checked />
+          <span class="swatch" style="background: rgb(139, 224, 78)" aria-hidden="true"></span>
+          B
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="C" checked />
+          <span class="swatch" style="background: rgb(239, 242, 61)" aria-hidden="true"></span>
+          C
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="D" checked />
+          <span class="swatch" style="background: rgb(247, 184, 37)" aria-hidden="true"></span>
+          D
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="F" checked />
+          <span class="swatch" style="background: rgb(255, 41, 26)" aria-hidden="true"></span>
+          F
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="OTHER" checked />
+          <span class="swatch" style="background: rgb(170, 170, 170)" aria-hidden="true"></span>
+          Not rated / other
+        </label>
+      </fieldset>
+
+      <div class="list-controls">
+        <div class="list-control">
+          <label class="map-toggle ribbon-toggle">
+            <input type="checkbox" id="showRestaurants" checked />
+            Show on map
+          </label>
+          <div class="dropdown">
+            <button type="button" class="dropdown-btn" id="restaurantsToggle" aria-expanded="false" aria-controls="restaurantsPanel">
+              Restaurants
+              <span class="dropdown-caret" aria-hidden="true"></span>
+            </button>
+            <div id="restaurantsPanel" class="dropdown-panel" hidden>
+              <div class="list-filter">
+                <label for="restaurantNameFilter">Filter list by name</label>
+                <input type="search" id="restaurantNameFilter" placeholder="e.g. Diner" />
+              </div>
+              <p class="list-status" id="restaurantStatus" aria-live="polite"></p>
+              <ul class="facility-list" id="restaurantList"></ul>
+              <button type="button" class="download-csv-btn" id="restaurantsCsvBtn">Download CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="list-control">
+          <label class="map-toggle ribbon-toggle">
+            <input type="checkbox" id="showSchools" checked />
+            Show on map
+          </label>
+          <div class="dropdown">
+            <button type="button" class="dropdown-btn" id="schoolsToggle" aria-expanded="false" aria-controls="schoolsPanel">
+              Schools
+              <span class="dropdown-caret" aria-hidden="true"></span>
+            </button>
+            <div id="schoolsPanel" class="dropdown-panel" hidden>
+              <div class="list-filter">
+                <label for="schoolNameFilter">Filter list by name</label>
+                <input type="search" id="schoolNameFilter" placeholder="e.g. Elementary" />
+              </div>
+              <p class="list-status" id="schoolStatus" aria-live="polite"></p>
+              <ul class="facility-list" id="schoolList"></ul>
+              <button type="button" class="download-csv-btn" id="schoolsCsvBtn">Download CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="list-control">
+          <div class="dropdown">
+            <button type="button" class="dropdown-btn" id="mobileToggle" aria-expanded="false" aria-controls="mobilePanel">
+              Mobile Food Trucks
+              <span class="dropdown-caret" aria-hidden="true"></span>
+            </button>
+            <div id="mobilePanel" class="dropdown-panel dropdown-panel--right" hidden>
+              <p class="hint">Not mapped &mdash; this dataset has no location data, so results are list-only.</p>
+              <div class="list-filter">
+                <label for="mobileNameFilter">Filter list by name</label>
+                <input type="search" id="mobileNameFilter" placeholder="e.g. Taco" />
+              </div>
+              <p class="list-status" id="mobileStatus" aria-live="polite"></p>
+              <ul class="facility-list" id="mobileList"></ul>
+              <button type="button" class="download-csv-btn" id="mobileCsvBtn">Download CSV</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="app-body">
-      <aside class="control-panel" aria-label="Search, filters, and facility lists">
-        <div id="searchContainer" class="search-container"></div>
-
-        <section class="filter-section" aria-labelledby="restaurantsHeading">
-          <div class="section-header">
-            <button
-              type="button"
-              class="disclosure-btn"
-              id="restaurantsToggle"
-              aria-expanded="false"
-              aria-controls="restaurantsPanel"
-            >
-              <span class="disclosure-icon" aria-hidden="true">+</span>
-              <span id="restaurantsHeading">Restaurants</span>
-            </button>
-            <label class="map-toggle">
-              <input type="checkbox" id="showRestaurants" checked />
-              Show on map
-            </label>
-          </div>
-          <div id="restaurantsPanel" class="section-content" hidden>
-            <fieldset class="rating-legend">
-              <legend>Filter by rating</legend>
-              <label class="rating-item">
-                <input type="checkbox" class="rating-check" data-grade="A" checked />
-                <span class="swatch" style="background: rgb(90, 133, 90)" aria-hidden="true"></span>
-                A
-              </label>
-              <label class="rating-item">
-                <input type="checkbox" class="rating-check" data-grade="B" checked />
-                <span class="swatch" style="background: rgb(139, 224, 78)" aria-hidden="true"></span>
-                B
-              </label>
-              <label class="rating-item">
-                <input type="checkbox" class="rating-check" data-grade="C" checked />
-                <span class="swatch" style="background: rgb(239, 242, 61)" aria-hidden="true"></span>
-                C
-              </label>
-              <label class="rating-item">
-                <input type="checkbox" class="rating-check" data-grade="D" checked />
-                <span class="swatch" style="background: rgb(247, 184, 37)" aria-hidden="true"></span>
-                D
-              </label>
-              <label class="rating-item">
-                <input type="checkbox" class="rating-check" data-grade="F" checked />
-                <span class="swatch" style="background: rgb(255, 41, 26)" aria-hidden="true"></span>
-                F
-              </label>
-              <label class="rating-item">
-                <input type="checkbox" class="rating-check" data-grade="OTHER" checked />
-                <span class="swatch" style="background: rgb(170, 170, 170)" aria-hidden="true"></span>
-                Not rated / other
-              </label>
-            </fieldset>
-
-            <div class="list-filter">
-              <label for="restaurantNameFilter">Filter list by name</label>
-              <input type="search" id="restaurantNameFilter" placeholder="e.g. Diner" />
-            </div>
-            <p class="list-status" id="restaurantStatus" aria-live="polite"></p>
-            <ul class="facility-list" id="restaurantList"></ul>
-          </div>
-        </section>
-
-        <section class="filter-section" aria-labelledby="schoolsHeading">
-          <div class="section-header">
-            <button
-              type="button"
-              class="disclosure-btn"
-              id="schoolsToggle"
-              aria-expanded="false"
-              aria-controls="schoolsPanel"
-            >
-              <span class="disclosure-icon" aria-hidden="true">+</span>
-              <span id="schoolsHeading">Schools</span>
-            </button>
-            <label class="map-toggle">
-              <input type="checkbox" id="showSchools" checked />
-              Show on map
-            </label>
-          </div>
-          <div id="schoolsPanel" class="section-content" hidden>
-            <div class="list-filter">
-              <label for="schoolNameFilter">Filter list by name</label>
-              <input type="search" id="schoolNameFilter" placeholder="e.g. Elementary" />
-            </div>
-            <p class="list-status" id="schoolStatus" aria-live="polite"></p>
-            <ul class="facility-list" id="schoolList"></ul>
-          </div>
-        </section>
-
-        <section class="filter-section" aria-labelledby="mobileHeading">
-          <div class="section-header">
-            <button
-              type="button"
-              class="disclosure-btn"
-              id="mobileToggle"
-              aria-expanded="false"
-              aria-controls="mobilePanel"
-            >
-              <span class="disclosure-icon" aria-hidden="true">+</span>
-              <span id="mobileHeading">Mobile Food Trucks</span>
-            </button>
-          </div>
-          <div id="mobilePanel" class="section-content" hidden>
-            <p class="hint">Not mapped &mdash; this dataset has no location data, so results are list-only.</p>
-            <div class="list-filter">
-              <label for="mobileNameFilter">Filter list by name</label>
-              <input type="search" id="mobileNameFilter" placeholder="e.g. Taco" />
-            </div>
-            <p class="list-status" id="mobileStatus" aria-live="polite"></p>
-            <ul class="facility-list" id="mobileList"></ul>
-          </div>
-        </section>
+      <aside class="control-panel" id="controlPanel" aria-labelledby="aboutHeading">
+        <div class="control-panel-header">
+          <h2 id="aboutHeading">About this map</h2>
+          <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Collapse the about panel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <line x1="5" y1="5" x2="19" y2="19" />
+              <line x1="19" y1="5" x2="5" y2="19" />
+            </svg>
+          </button>
+        </div>
+        <div class="sidebar-intro">
+          <p>
+            This map shows the current health inspection rating for restaurants, schools, and mobile food trucks
+            in Douglas County, Nebraska.
+          </p>
+          <p>
+            Ratings and inspection details come from the Douglas County Health Department's food establishment
+            inspection program. Use the <strong>Filter by rating</strong> bar and the Restaurants / Schools /
+            Mobile Food Trucks buttons above the map to search, browse, and download the underlying data.
+          </p>
+        </div>
       </aside>
 
       <main id="viewDiv" aria-label="Map"></main>
     </div>
+
+    <footer class="app-footer">
+      <a class="footer-logo-link" href="https://maps.dogis.org/">
+        <img
+          class="footer-logo"
+          src="https://s3.amazonaws.com/dcgis_photos/Logos/DCgis_web_logo_no_shadow_82x31.png"
+          alt="Douglas County GIS maps site"
+          width="58"
+          height="22"
+        />
+      </a>
+      <span class="footer-text">Powered by Douglas County GIS</span>
+    </footer>
 
     <script type="module" src="./app.js"></script>
   </body>

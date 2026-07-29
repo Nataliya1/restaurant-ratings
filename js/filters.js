@@ -32,7 +32,7 @@ export function buildRestaurantDefinitionExpression(state) {
 
   const clauses = [];
   if (showRestaurants) clauses.push(`(${restaurantPredicate} AND ${ratingClause})`);
-  if (showSchools) clauses.push(`(${schoolPredicate})`);
+  if (showSchools) clauses.push(`(${schoolPredicate} AND ${ratingClause})`);
 
   return clauses.length ? clauses.join(' OR ') : '1=0';
 }

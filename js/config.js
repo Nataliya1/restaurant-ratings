@@ -23,6 +23,6 @@ export const RATING_GRADES = [
 
 export const OTHER_RATING = { value: 'OTHER', label: 'Not rated / other', color: [170, 170, 170] };
 
-// Set to '' to hide this source and fall back to the Esri World Geocoder only.
+// Set to '' to hide this source (search will then only match facility names, no address geocoding).
 export const CUSTOM_GEOCODER_URL = 'https://dcgis.org/server/rest/services/Geocoders/PointAddress_and_Street_Roles/GeocodeServer';
 export const CUSTOM_GEOCODER_NAME = 'Douglas County Geocoder';

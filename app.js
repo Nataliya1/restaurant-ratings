@@ -1,10 +1,14 @@
 import WebMap from 'https://js.arcgis.com/4.31/@arcgis/core/WebMap.js';
 import MapView from 'https://js.arcgis.com/4.31/@arcgis/core/views/MapView.js';
+import BasemapGallery from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/BasemapGallery.js';
+import Expand from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Expand.js';
+import Home from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Home.js';
 
 import { WEBMAP_ITEM_ID, RESTAURANT_LAYER_TITLE, MOBILE_TABLE_TITLE, NAME_FIELD_RESTAURANT, NAME_FIELD_MOBILE } from './js/config.js';
 import { buildRestaurantDefinitionExpression, buildRatingClause } from './js/filters.js';
-import { queryFacilityList, queryMobileList } from './js/lists.js';
+import { queryFacilityList, queryMobileList, queryAllFacilities, queryAllMobile } from './js/lists.js';
 import { createSearchWidget } from './js/search.js';
+import { toCsv, downloadCsv } from './js/csv.js';
 
 const container = document.getElementById('viewDiv');
 
@@ -22,6 +26,19 @@ const view = new MapView({
   }
 });
 
+const homeWidget = new Home({ view });
+
+const basemapGallery = new BasemapGallery({ view });
+const basemapExpand = new Expand({
+  view,
+  content: basemapGallery,
+  expandIcon: 'basemap',
+  expandTooltip: 'Basemap gallery',
+  collapseTooltip: 'Basemap gallery'
+});
+
+view.ui.add([homeWidget, basemapExpand], 'top-right');
+
 const filterState = {
   showRestaurants: true,
   showSchools: true,
@@ -36,23 +53,117 @@ function debounce(fn, delay) {
   };
 }
 
-function setupDisclosure(buttonId, panelId) {
+const openDropdowns = new Map(); // panel -> button, for outside-click/Escape close
+
+function closeDropdown(panel) {
+  const button = openDropdowns.get(panel);
+  if (!button) return;
+  button.setAttribute('aria-expanded', 'false');
+  panel.hidden = true;
+  openDropdowns.delete(panel);
+}
+
+// restoreFocus matters for keyboard users: hiding a panel that contains the
+// currently-focused button (the one that opened it) silently drops focus to
+// <body>, since a focused element inside a newly-hidden ancestor can't stay
+// focused. Pass true when the close is a deliberate user action (Escape,
+// selecting a list item) so focus lands back on the toggle button instead of
+// vanishing. Left false for incidental closes (e.g. clicking elsewhere on the
+// page), where yanking focus back to the button would be surprising.
+function closeAllDropdowns({ restoreFocus = false } = {}) {
+  openDropdowns.forEach((button, panel) => {
+    closeDropdown(panel);
+    if (restoreFocus) button.focus();
+  });
+}
+
+function setupDropdown(buttonId, panelId) {
   const button = document.getElementById(buttonId);
   const panel = document.getElementById(panelId);
   let loaded = false;
 
-  button.addEventListener('click', () => {
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
     const expanded = button.getAttribute('aria-expanded') === 'true';
-    button.setAttribute('aria-expanded', String(!expanded));
-    panel.hidden = expanded;
-    button.querySelector('.disclosure-icon').textContent = expanded ? '+' : '−';
 
-    if (!expanded && !loaded) {
+    // Only one dropdown open at a time.
+    openDropdowns.forEach((_openButton, openPanel) => closeDropdown(openPanel));
+
+    if (expanded) return;
+
+    button.setAttribute('aria-expanded', 'true');
+    panel.hidden = false;
+    openDropdowns.set(panel, button);
+
+    if (!loaded) {
       loaded = true;
       panel.dispatchEvent(new CustomEvent('first-open'));
     }
   });
+
+  panel.addEventListener('click', (event) => event.stopPropagation());
 }
+
+const menuToggleBtn = document.getElementById('menuToggle');
+const headerActionsMenu = document.getElementById('headerActionsMenu');
+
+// Below the 720px breakpoint, the header icons collapse into this hamburger-triggered
+// menu (see the .header-actions rules in that media query). Kept separate from
+// setupDropdown/openDropdowns above: that mechanism closes every other open dropdown
+// whenever one opens, which would immediately close this menu when its own nested
+// "Contact us" dropdown (setupDropdown('contactToggle', ...) below) is opened from inside it.
+function setHeaderMenuOpen(open) {
+  headerActionsMenu.classList.toggle('is-open', open);
+  menuToggleBtn.setAttribute('aria-expanded', String(open));
+  const label = open ? 'Close menu' : 'Open menu';
+  menuToggleBtn.setAttribute('aria-label', label);
+  menuToggleBtn.setAttribute('title', label);
+}
+
+menuToggleBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  setHeaderMenuOpen(!headerActionsMenu.classList.contains('is-open'));
+});
+
+headerActionsMenu.addEventListener('click', (event) => event.stopPropagation());
+
+document.addEventListener('click', () => {
+  closeAllDropdowns();
+  setHeaderMenuOpen(false);
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  closeAllDropdowns({ restoreFocus: true });
+  if (headerActionsMenu.classList.contains('is-open')) {
+    setHeaderMenuOpen(false);
+    menuToggleBtn.focus();
+  }
+});
+
+const controlPanel = document.getElementById('controlPanel');
+const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+const infoToggleBtn = document.getElementById('infoToggle');
+
+function setSidebarVisible(visible) {
+  controlPanel.hidden = !visible;
+  infoToggleBtn.setAttribute('aria-expanded', String(visible));
+  const label = visible ? 'Hide the about panel' : 'Show the about panel';
+  infoToggleBtn.setAttribute('aria-label', label);
+  infoToggleBtn.setAttribute('title', label);
+}
+
+sidebarCloseBtn.addEventListener('click', () => {
+  setSidebarVisible(false);
+  // sidebarCloseBtn lives inside #controlPanel, so hiding it hides its own
+  // currently-focused button — without this, focus would silently drop to <body>.
+  infoToggleBtn.focus();
+});
+infoToggleBtn.addEventListener('click', () => {
+  setSidebarVisible(infoToggleBtn.getAttribute('aria-expanded') !== 'true');
+});
+
+setupDropdown('contactToggle', 'contactPanel');
 
 function renderFacilityList(listEl, statusEl, features, { nameField, spatial, onSelect }) {
   listEl.innerHTML = '';
@@ -76,7 +187,12 @@ function renderFacilityList(listEl, statusEl, features, { nameField, spatial, on
     btn.textContent = `${name}${address}${rating}`;
 
     if (spatial) {
-      btn.addEventListener('click', () => onSelect(feature));
+      btn.addEventListener('click', () => {
+        // restoreFocus:true because this closes the panel btn itself lives in —
+        // without it, focus would silently drop to <body> after selecting a result.
+        closeAllDropdowns({ restoreFocus: true });
+        onSelect(feature);
+      });
     } else {
       btn.setAttribute('aria-expanded', 'false');
       const detail = document.createElement('div');
@@ -122,7 +238,7 @@ view.when(
 
     await Promise.all([restaurantLayer.load(), mobileTable.load()]);
 
-    createSearchWidget({ view, container: 'searchContainer', restaurantLayer });
+    createSearchWidget({ view, restaurantLayer });
 
     function applyMapFilter() {
       restaurantLayer.definitionExpression = buildRestaurantDefinitionExpression(filterState);
@@ -155,7 +271,8 @@ view.when(
       schoolStatusEl.textContent = 'Loading…';
       const { features } = await queryFacilityList(restaurantLayer, {
         isSchool: true,
-        nameFilter: schoolNameFilter.value.trim()
+        nameFilter: schoolNameFilter.value.trim(),
+        ratingClause: buildRatingClause(filterState.ratings)
       });
       renderFacilityList(schoolListEl, schoolStatusEl, features, {
         nameField: NAME_FIELD_RESTAURANT,
@@ -179,13 +296,64 @@ view.when(
       });
     }
 
-    setupDisclosure('restaurantsToggle', 'restaurantsPanel');
-    setupDisclosure('schoolsToggle', 'schoolsPanel');
-    setupDisclosure('mobileToggle', 'mobilePanel');
+    setupDropdown('restaurantsToggle', 'restaurantsPanel');
+    setupDropdown('schoolsToggle', 'schoolsPanel');
+    setupDropdown('mobileToggle', 'mobilePanel');
 
     document.getElementById('restaurantsPanel').addEventListener('first-open', refreshRestaurantList);
     document.getElementById('schoolsPanel').addEventListener('first-open', refreshSchoolList);
     document.getElementById('mobilePanel').addEventListener('first-open', refreshMobileList);
+
+    async function downloadCategoryCsv(button, filename, columns, fetchRows) {
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = 'Preparing download…';
+      try {
+        const features = await fetchRows();
+        downloadCsv(filename, toCsv(features.map((f) => f.attributes), columns));
+      } catch (error) {
+        console.error(`Failed to build CSV for ${filename}.`, error);
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    }
+
+    const formatInspectionDate = (a) => (a.inspection_date ? new Date(a.inspection_date).toLocaleDateString() : '');
+
+    const facilityCsvColumns = [
+      { label: 'Name', value: (a) => a[NAME_FIELD_RESTAURANT] },
+      { label: 'Address', value: (a) => a.est_address },
+      { label: 'City', value: (a) => a.est_city },
+      { label: 'Rating', value: (a) => a.rating },
+      { label: 'Inspection Date', value: formatInspectionDate }
+    ];
+
+    document.getElementById('restaurantsCsvBtn').addEventListener('click', (e) => {
+      downloadCategoryCsv(e.currentTarget, 'restaurants.csv', facilityCsvColumns, () =>
+        queryAllFacilities(restaurantLayer, { isSchool: false })
+      );
+    });
+    document.getElementById('schoolsCsvBtn').addEventListener('click', (e) => {
+      downloadCategoryCsv(e.currentTarget, 'schools.csv', facilityCsvColumns, () =>
+        queryAllFacilities(restaurantLayer, { isSchool: true })
+      );
+    });
+    document.getElementById('mobileCsvBtn').addEventListener('click', (e) => {
+      downloadCategoryCsv(
+        e.currentTarget,
+        'mobile-food-trucks.csv',
+        [
+          { label: 'Name', value: (a) => a[NAME_FIELD_MOBILE] },
+          { label: 'Address', value: (a) => a.est_address },
+          { label: 'City', value: (a) => a.est_city },
+          { label: 'Rating', value: (a) => a.rating },
+          { label: 'Permit #', value: (a) => a.permit_number },
+          { label: 'Inspection Date', value: formatInspectionDate }
+        ],
+        () => queryAllMobile(mobileTable)
+      );
+    });
 
     document.getElementById('showRestaurants').addEventListener('change', (e) => {
       filterState.showRestaurants = e.target.checked;
@@ -200,6 +368,7 @@ view.when(
         filterState.ratings[el.dataset.grade] = el.checked;
         applyMapFilter();
         refreshRestaurantList();
+        refreshSchoolList();
       });
     });
 
