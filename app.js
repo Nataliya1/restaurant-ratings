@@ -3,6 +3,7 @@ import MapView from 'https://js.arcgis.com/4.31/@arcgis/core/views/MapView.js';
 import BasemapGallery from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/BasemapGallery.js';
 import Expand from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Expand.js';
 import Home from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Home.js';
+import Locate from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Locate.js';
 
 import { WEBMAP_ITEM_ID, RESTAURANT_LAYER_TITLE, MOBILE_TABLE_TITLE, NAME_FIELD_RESTAURANT, NAME_FIELD_MOBILE } from './js/config.js';
 import { buildRestaurantDefinitionExpression, buildRatingClause } from './js/filters.js';
@@ -22,7 +23,7 @@ const view = new MapView({
   container,
   map: webmap,
   ui: {
-    components: ['zoom', 'compass', 'attribution']
+    components: ['zoom', 'attribution']
   }
 });
 
@@ -38,6 +39,12 @@ const basemapExpand = new Expand({
 });
 
 view.ui.add([homeWidget, basemapExpand], 'top-right');
+
+// Replaces the default 'compass' (reset map orientation) component, in the same
+// top-left slot below the zoom control. Requires a secure context (HTTPS or
+// localhost) — browsers silently deny geolocation on plain HTTP.
+const locateWidget = new Locate({ view });
+view.ui.add(locateWidget, 'top-left');
 
 const filterState = {
   showRestaurants: true,
