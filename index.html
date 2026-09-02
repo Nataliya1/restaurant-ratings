@@ -30,6 +30,40 @@
         </button>
 
         <nav class="header-actions" id="headerActionsMenu" aria-label="Help and contact links">
+        <button type="button" class="header-action" id="infoToggle" aria-haspopup="dialog" aria-label="About this map" title="About this map">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <line x1="12" y1="11" x2="12" y2="16" />
+            <circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="header-action-label">About</span>
+        </button>
+        <a class="header-action" href="./ratings-explained.html" aria-label="How ratings are assigned" title="How ratings are assigned">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <text x="12" y="12.5" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="700" fill="currentColor" stroke="none" font-family="Georgia, 'Times New Roman', serif">A</text>
+          </svg>
+          <span class="header-action-label">How ratings are assigned</span>
+        </a>
+        <a class="header-action" href="./faq.html" aria-label="Frequently asked questions (FAQ)" title="Frequently asked questions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1.3 1-1.3 1.9v.3" />
+            <circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="header-action-label">FAQ</span>
+        </a>
+        <a class="header-action" href="./facility-list.html" aria-label="All facilities list" title="All facilities list">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none" />
+            <line x1="8" y1="6" x2="20" y2="6" />
+            <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none" />
+            <line x1="8" y1="12" x2="20" y2="12" />
+            <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none" />
+            <line x1="8" y1="18" x2="20" y2="18" />
+          </svg>
+          <span class="header-action-label">All facilities list</span>
+        </a>
         <div class="dropdown">
           <button type="button" class="header-action" id="contactToggle" aria-expanded="false" aria-controls="contactPanel" aria-label="Contact us" title="Contact us">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -49,29 +83,6 @@
             </a>
           </div>
         </div>
-        <button type="button" class="header-action" id="infoToggle" aria-haspopup="dialog" aria-label="About this map" title="About this map">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <circle cx="12" cy="12" r="9" />
-            <line x1="12" y1="11" x2="12" y2="16" />
-            <circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none" />
-          </svg>
-          <span class="header-action-label">About</span>
-        </button>
-        <a class="header-action" href="./faq.html" aria-label="Frequently asked questions (FAQ)" title="Frequently asked questions">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1.3 1-1.3 1.9v.3" />
-            <circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none" />
-          </svg>
-          <span class="header-action-label">FAQ</span>
-        </a>
-        <a class="header-action" href="./ratings-explained.html" aria-label="How ratings are assigned" title="How ratings are assigned">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <circle cx="12" cy="12" r="9" />
-            <text x="12" y="12.5" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="700" fill="currentColor" stroke="none" font-family="Georgia, 'Times New Roman', serif">A</text>
-          </svg>
-          <span class="header-action-label">How ratings are assigned</span>
-        </a>
         </nav>
       </div>
     </header>
@@ -226,6 +237,6 @@
       </form>
     </dialog>
 
-    <script type="module" src="./app.js"></script>
+    <script type="module" src="./app.js?v=3"></script>
   </body>
 </html>

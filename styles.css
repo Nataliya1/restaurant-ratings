@@ -1082,3 +1082,228 @@ body {
     padding: 1.5rem 1rem 2rem;
   }
 }
+
+/* All Facilities page */
+
+.facility-list-main {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  flex: 1;
+}
+
+.facility-list-main > h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.5rem;
+}
+
+.facility-list-intro {
+  margin: 0 0 1.25rem;
+  color: #374151;
+  line-height: 1.5;
+  max-width: 65ch;
+}
+
+.facility-name-filter {
+  max-width: 320px;
+  margin-bottom: 0.5rem;
+}
+
+.facility-list-main .list-status {
+  margin: 0 0 2rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* .facility-group (the <details>) is deliberately left in normal block flow —
+   making it a flex container directly broke Chromium's internal handling of
+   <details>'s content, pushing <summary> tens of thousands of pixels down the
+   page (empirically, roughly the height of the ~2200-card content that should
+   have been below it). The CSV button instead sits absolutely-positioned in
+   the top-right corner: it must stay a *sibling* of <summary>, not nested
+   inside it (a button nested in a summary is two interactive controls layered
+   on each other — axe's nested-interactive rule flags it, and <summary> must
+   stay a direct child of <details> for the browser to treat it as the
+   disclosure control at all, which rules out a shared flex-row wrapper too). */
+.facility-group {
+  position: relative;
+  margin-bottom: 2.5rem;
+}
+
+.facility-group:last-child {
+  margin-bottom: 0;
+}
+
+.facility-group > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 44px;
+  /* Reserves room so the heading/caret never run under the absolutely
+     positioned CSV button in the same corner. */
+  padding-right: 140px;
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border-warm);
+  cursor: pointer;
+  list-style: none;
+}
+
+/* Hide the browser's default disclosure marker so .facility-group-caret
+   (matching .faq-caret elsewhere on the site) can take its place. */
+.facility-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.facility-group > summary::marker {
+  content: "";
+}
+
+.facility-group > summary h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.facility-group-caret {
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #4b5563;
+  transition: transform 0.15s ease;
+}
+
+.facility-group[open] > summary .facility-group-caret {
+  transform: rotate(180deg);
+}
+
+.facility-group-csv-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: auto;
+  min-height: 36px;
+  margin-top: 0;
+  padding: 0 0.85rem;
+  font-size: 0.8rem;
+}
+
+.facility-group-count {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  /* #6b7280 (used elsewhere on the lighter --color-panel) only measures ~4.36:1
+     here against --color-paper, just under the 4.5:1 floor — this sits directly
+     on the page background, not a card, so it needs the darker gray instead. */
+  color: #4b5563;
+}
+
+.facility-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.85rem;
+}
+
+/* :not([hidden]) matters here — a plain `display: flex` beats the browser's
+   [hidden] rule (author styles win over user-agent styles on the same property
+   regardless of specificity), so toggling .hidden via JS wouldn't visually hide
+   filtered-out cards without this scoping. Same fix as .header-dropdown-panel. */
+.facility-card-item:not([hidden]) {
+  display: flex;
+}
+
+.facility-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border-warm);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+}
+
+.facility-card-name {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.facility-card-address {
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.facility-card-meta {
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+}
+
+.facility-card-meta dt {
+  float: left;
+  clear: left;
+  width: 45%;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.facility-card-meta dd {
+  margin: 0 0 0.3rem 45%;
+  color: #374151;
+}
+
+.facility-card-meta::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.facility-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.facility-card-rating img {
+  flex: 0 0 auto;
+}
+
+.facility-card-link {
+  margin-top: auto;
+  align-self: flex-start;
+  padding-top: 0.5rem;
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+  .facility-list-main {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .facility-cards {
+    grid-template-columns: 1fr;
+  }
+}

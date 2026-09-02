@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Facilities &ndash; Restaurant Inspection Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="content-page">
+    <a class="skip-link" href="#facilityListMain">Skip to facility list</a>
+
+    <header class="app-header">
+      <img class="header-logo" src="./images/header-logo.png" alt="" />
+      <div class="app-header-text">
+        <h1>Restaurant Inspection Ratings</h1>
+        <p class="app-subtitle">Douglas County Health Department</p>
+      </div>
+    </header>
+
+    <nav class="back-nav" aria-label="Page">
+      <a class="back-link" href="./index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Back to map
+      </a>
+    </nav>
+
+    <div class="rating-ribbon" role="region" aria-label="Filter by rating">
+      <fieldset class="rating-legend">
+        <legend>Filter by rating</legend>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="A" checked />
+          <img class="swatch" src="./images/rating-a.png" alt="" aria-hidden="true" width="120" height="120" />
+          A
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="B" checked />
+          <img class="swatch" src="./images/rating-b.png" alt="" aria-hidden="true" width="120" height="120" />
+          B
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="C" checked />
+          <img class="swatch" src="./images/rating-c.png" alt="" aria-hidden="true" width="120" height="120" />
+          C
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="D" checked />
+          <img class="swatch" src="./images/rating-d.png" alt="" aria-hidden="true" width="120" height="120" />
+          D
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="F" checked />
+          <img class="swatch" src="./images/rating-f.png" alt="" aria-hidden="true" width="120" height="120" />
+          F
+        </label>
+        <label class="rating-item">
+          <input type="checkbox" class="rating-check" data-grade="OTHER" checked />
+          <img class="swatch" src="./images/rating-nr.png" alt="" aria-hidden="true" width="120" height="120" />
+          Not rated / other
+        </label>
+      </fieldset>
+    </div>
+
+    <main id="facilityListMain" class="facility-list-main" aria-labelledby="facilityListHeading">
+      <h2 id="facilityListHeading">All Facilities</h2>
+      <p class="facility-list-intro">
+        Every restaurant, school, and mobile food truck currently matching the rating filter above, grouped by
+        type. Each card shows the same information as the map's popup for that facility.
+      </p>
+
+      <div class="list-filter facility-name-filter">
+        <label for="facilityNameFilter">Filter all facilities by name</label>
+        <input type="search" id="facilityNameFilter" placeholder="e.g. Diner" />
+      </div>
+
+      <p class="list-status" id="facilityListStatus" aria-live="polite">Loading facilities&hellip;</p>
+
+      <details class="facility-group" open>
+        <summary>
+          <h3 id="restaurantsGroupHeading">Restaurants <span class="facility-group-count" id="restaurantsCount"></span></h3>
+          <span class="facility-group-caret" aria-hidden="true"></span>
+        </summary>
+        <button type="button" class="download-csv-btn facility-group-csv-btn" id="restaurantsCsvBtn">Download CSV</button>
+        <ul class="facility-cards" id="restaurantCards"></ul>
+      </details>
+
+      <details class="facility-group" open>
+        <summary>
+          <h3 id="schoolsGroupHeading">Schools <span class="facility-group-count" id="schoolsCount"></span></h3>
+          <span class="facility-group-caret" aria-hidden="true"></span>
+        </summary>
+        <button type="button" class="download-csv-btn facility-group-csv-btn" id="schoolsCsvBtn">Download CSV</button>
+        <ul class="facility-cards" id="schoolCards"></ul>
+      </details>
+
+      <details class="facility-group" open>
+        <summary>
+          <h3 id="mobileGroupHeading">Mobile Food Trucks <span class="facility-group-count" id="mobileCount"></span></h3>
+          <span class="facility-group-caret" aria-hidden="true"></span>
+        </summary>
+        <button type="button" class="download-csv-btn facility-group-csv-btn" id="mobileCsvBtn">Download CSV</button>
+        <ul class="facility-cards" id="mobileCards"></ul>
+      </details>
+    </main>
+
+    <footer class="app-footer">
+      <a class="footer-logo-link" href="https://maps.dogis.org/">
+        <img
+          class="footer-logo"
+          src="https://s3.amazonaws.com/dcgis_photos/Logos/DCgis_web_logo_no_shadow_82x31.png"
+          alt="Douglas County GIS maps site"
+          width="58"
+          height="22"
+        />
+      </a>
+      <span class="footer-text">Powered by Douglas County GIS</span>
+    </footer>
+
+    <script type="module" src="./js/facility-list.js"></script>
+  </body>
+</html>

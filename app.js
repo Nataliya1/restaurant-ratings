@@ -7,7 +7,7 @@ import Locate from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Locate.js';
 
 import { WEBMAP_ITEM_ID, RESTAURANT_LAYER_TITLE, MOBILE_TABLE_TITLE, NAME_FIELD_RESTAURANT, NAME_FIELD_MOBILE } from './js/config.js';
 import { buildRestaurantDefinitionExpression, buildRatingClause } from './js/filters.js';
-import { queryFacilityList, queryMobileList, queryAllFacilities, queryAllMobile } from './js/lists.js';
+import { queryFacilityList, queryMobileList, queryAllFacilities, queryAllMobile, queryLatestObjectIds } from './js/lists.js';
 import { createSearchWidget } from './js/search.js';
 import { toCsv, downloadCsv } from './js/csv.js';
 
@@ -241,10 +241,14 @@ function renderFacilityList(listEl, statusEl, features, { nameField, spatial, on
   });
 }
 
+// view.popup.open() isn't a function on this SDK version (4.31) — view.openPopup()
+// is the supported imperative API and also drives the same feature-selection
+// highlight a direct map click gets, since the graphic already carries its
+// source layer from queryFeatures().
 async function goToFeature(restaurantLayer, feature) {
   feature.popupTemplate = restaurantLayer.popupTemplate;
   await view.goTo({ target: feature.geometry, zoom: 18 }).catch(() => {});
-  view.popup.open({ location: feature.geometry, features: [feature] });
+  view.openPopup({ location: feature.geometry, features: [feature] });
 }
 
 view.when(
@@ -268,6 +272,21 @@ view.when(
       restaurantLayer.definitionExpression = buildRestaurantDefinitionExpression(filterState);
     }
     applyMapFilter();
+
+    // The map should show one point per place (its most recent inspection only),
+    // not one per historical inspection row — AGOL's Map Viewer can't express that
+    // "latest per group" filter itself, so it's computed here instead. This is
+    // applied as a LayerView filter (client-side, draw-only) rather than folded
+    // into definitionExpression above: definitionExpression restricts the layer's
+    // own queryable dataset, and the webmap's popup reads its multi-row inspection
+    // history from that same dataset — narrowing it would leave only the one
+    // visible row for every popup. A LayerView filter only hides the older points
+    // from view; the full history stays queryable for the popup.
+    queryLatestObjectIds(restaurantLayer).then(async ({ oidField, ids }) => {
+      if (!ids.length) return;
+      const layerView = await view.whenLayerView(restaurantLayer);
+      layerView.filter = { where: `${oidField} IN (${ids.join(',')})` };
+    });
 
     const restaurantListEl = document.getElementById('restaurantList');
     const restaurantStatusEl = document.getElementById('restaurantStatus');

@@ -119,6 +119,26 @@ export async function queryMobileList(table, { nameFilter } = {}) {
   return { features: dedupeToLatestPerFirm(features) };
 }
 
+/**
+ * AGOL's Map Viewer has no "latest record per group" filter option, so the map layer
+ * otherwise draws one point per historical inspection row instead of one per place.
+ * This queries every row across the whole table (both restaurants and schools, all
+ * dates, ignoring the rating/category/name filters) just to work out which single
+ * ObjectID is the most recent inspection for each firm_number — the caller then
+ * restricts the map layer's definitionExpression to just those. The popup's own
+ * inspection-history table is unaffected: it's built from the full service data,
+ * independent of which rows the map layer is currently drawing.
+ */
+export async function queryLatestObjectIds(layer) {
+  const oidField = layer.objectIdField || 'ObjectID';
+  const features = await queryAllPages(layer, {
+    where: '1=1',
+    outFields: [oidField, 'firm_number', 'inspection_date', 'inspection_id'],
+    returnGeometry: false
+  });
+  return { oidField, ids: dedupeToLatestPerFirm(features).map((f) => f.attributes[oidField]) };
+}
+
 /** Fetches every restaurant or school place (ignores name/rating filters) for CSV export, most recent inspection only. */
 export async function queryAllFacilities(layer, { isSchool }) {
   const categoryClause = isSchool
