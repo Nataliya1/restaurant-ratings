@@ -40,6 +40,17 @@ body {
   background: var(--color-paper);
 }
 
+/* index.html pins html/body to the viewport height so the map (#viewDiv) and
+   its sidebar can fill the screen with their own internal scrollbars. Plain
+   content pages (FAQ, ratings-explained) have no such fixed-height region,
+   so that same 100%-height body traps their overflow below the fold with no
+   way to scroll to it. This override lets the body grow with its content and
+   scroll normally instead. */
+.content-page {
+  height: auto;
+  min-height: 100%;
+}
+
 *:focus-visible {
   outline: 3px solid var(--color-accent);
   outline-offset: 2px;
@@ -73,6 +84,7 @@ body {
 }
 
 .app-header {
+  position: relative;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -360,33 +372,45 @@ body {
   color: var(--color-ink-subtext);
 }
 
-.control-panel {
-  width: 340px;
-  flex: 0 0 340px;
-  overflow-y: auto;
+.about-dialog {
+  width: min(560px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  margin: auto;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
   background: var(--color-panel);
-  border-right: 1px solid var(--color-border-warm);
-  padding: 0.75rem;
-  box-sizing: border-box;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
-.control-panel-header {
+.about-dialog::backdrop {
+  background: rgba(30, 42, 36, 0.55);
+}
+
+.about-dialog-form {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 2rem);
+}
+
+.about-dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding: 1.25rem 1.25rem 0.75rem 1.5rem;
+  flex: 0 0 auto;
 }
 
-.control-panel-header h2 {
+.about-dialog-header h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: #111827;
 }
 
-.sidebar-close-btn {
+.about-dialog-close-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -400,27 +424,69 @@ body {
   cursor: pointer;
 }
 
-.sidebar-close-btn:hover {
+.about-dialog-close-btn:hover {
   background: var(--color-accent-soft);
 }
 
-.sidebar-close-btn svg {
+.about-dialog-close-btn svg {
   width: 18px;
   height: 18px;
 }
 
-.sidebar-intro {
+.about-dialog-body {
+  overflow-y: auto;
+  padding: 0.35rem 1.25rem 0.6rem;
   font-size: 0.9rem;
   color: #374151;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
-.sidebar-intro p {
+.about-dialog-body p {
   margin: 0 0 0.75rem;
 }
 
-.sidebar-intro p:last-child {
+.about-dialog-body p:last-child {
   margin-bottom: 0;
+}
+
+.about-dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1.1rem 1.5rem 1.5rem;
+  flex: 0 0 auto;
+}
+
+.about-dialog-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.about-dialog-checkbox input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+}
+
+.about-dialog-continue-btn {
+  min-height: 40px;
+  padding: 0 1.1rem;
+  background: var(--color-accent);
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.about-dialog-continue-btn:hover {
+  background: #7a3409;
 }
 
 /* js/search.js exposes exactly one merged search source (facility name +
@@ -589,14 +655,6 @@ body {
     flex-direction: column;
   }
 
-  .control-panel {
-    width: auto;
-    flex: 0 0 auto;
-    max-height: 50vh;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border-warm);
-  }
-
   #viewDiv {
     flex: 1 1 auto;
     min-height: 45vh;
@@ -604,7 +662,11 @@ body {
 
   .mobile-menu {
     display: inline-flex;
-    position: relative;
+    /* No position:relative here on purpose — .header-actions (position:absolute)
+       needs to anchor to .app-header instead. .mobile-menu can end up wrapped
+       to a small box near the left edge when the header runs out of horizontal
+       room (flex-wrap), and anchoring the dropdown to that box pushed it mostly
+       off-screen to the left instead of under the header, top-right. */
   }
 
   .hamburger-btn {
@@ -664,9 +726,15 @@ body {
     font-size: 0.75rem;
   }
 
-  .control-panel {
-    padding: 0.5rem;
-    max-height: 55vh;
+  .about-dialog-header,
+  .about-dialog-footer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .about-dialog-body {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
   .rating-legend {
@@ -685,5 +753,332 @@ body {
 
   .rating-item {
     min-height: 40px;
+  }
+}
+
+/* FAQ / ratings-explained pages */
+
+.back-nav {
+  display: flex;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  padding: 0.4rem 1.25rem;
+  background: var(--color-ink);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 36px;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.back-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  text-decoration: underline;
+}
+
+/* Same 1.4.11 contrast issue as .header-action: --color-accent on this dark
+   ink background measures ~2.1:1, below the 3:1 minimum, so white replaces
+   it for the focus ring here too. */
+.back-link:focus-visible {
+  outline-color: #fff;
+}
+
+.faq-main {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  flex: 1;
+}
+
+#faqHeading,
+#ratingsHeading {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 1.25rem;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.faq-item {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border-warm);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.faq-item > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 44px;
+  padding: 0.85rem 1rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  cursor: pointer;
+  list-style: none;
+}
+
+/* Hide the browser's default disclosure marker so the custom .faq-caret
+   (matching .dropdown-caret elsewhere on the site) can take its place. */
+.faq-item > summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item > summary::marker {
+  content: "";
+}
+
+.faq-item > summary:hover {
+  background: var(--color-accent-soft);
+}
+
+.faq-item[open] > summary {
+  border-bottom: 1px solid var(--color-border-warm);
+}
+
+.faq-caret {
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #4b5563;
+  transition: transform 0.15s ease;
+}
+
+.faq-item[open] > summary .faq-caret {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  padding: 0.85rem 1rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.faq-answer p {
+  margin: 0 0 0.75rem;
+}
+
+.faq-answer p:last-child {
+  margin-bottom: 0;
+}
+
+.faq-link {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.faq-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 0.75rem;
+}
+
+.faq-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 420px;
+  font-size: 0.9rem;
+}
+
+.faq-table caption {
+  text-align: left;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.faq-table th,
+.faq-table td {
+  border: 1px solid var(--color-border-warm);
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+}
+
+.faq-table thead th {
+  background: var(--color-accent-soft);
+  font-family: var(--font-display);
+}
+
+.faq-table-note {
+  font-size: 0.85rem;
+  color: #4b5563;
+  font-style: italic;
+}
+
+.faq-freq-dl {
+  margin: 0.75rem 0 0;
+}
+
+.faq-freq-dl dt {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: #111827;
+  margin-top: 0.6rem;
+}
+
+.faq-freq-dl dt:first-child {
+  margin-top: 0;
+}
+
+.faq-freq-dl dd {
+  margin: 0.15rem 0 0;
+}
+
+.faq-contact {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border-warm);
+  color: #374151;
+  line-height: 1.6;
+}
+
+.faq-contact h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.75rem;
+}
+
+.faq-contact p {
+  margin: 0 0 0.75rem;
+}
+
+.faq-contact ul {
+  margin: 0 0 0.75rem 1.25rem;
+  padding: 0;
+}
+
+.faq-contact li {
+  margin-bottom: 0.3rem;
+}
+
+/* Ratings-explained page */
+
+.faq-main section {
+  margin-bottom: 2rem;
+}
+
+.faq-main section:last-child {
+  margin-bottom: 0;
+}
+
+.faq-main section > h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.75rem;
+}
+
+.faq-main section > p {
+  color: #374151;
+  line-height: 1.6;
+  margin: 0 0 0.75rem;
+}
+
+
+.rating-matrix-wrap {
+  overflow-x: auto;
+  margin: 0 0 0.75rem;
+}
+
+.rating-matrix {
+  border-collapse: collapse;
+  min-width: 640px;
+  font-size: 0.85rem;
+}
+
+.rating-matrix caption {
+  text-align: left;
+  font-weight: 600;
+  font-family: var(--font-display);
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.rating-matrix th,
+.rating-matrix td {
+  border: 1px solid var(--color-border-warm);
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+}
+
+.rating-matrix thead th,
+.rating-matrix tbody th {
+  background: var(--color-accent-soft);
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Grade fills are light enough that --color-ink text clears 4.5:1 on all
+   four (verified against WCAG contrast math, not just eyeballed) so every
+   cell can share one text color instead of branching per grade. */
+.rating-matrix td {
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.grade-a {
+  background: #a6d96a;
+}
+
+.grade-b {
+  background: #d9ef8b;
+}
+
+.grade-c {
+  background: #fdae61;
+}
+
+.grade-d {
+  background: #ffe066;
+}
+
+.rating-rules {
+  margin: 0 0 0 1.25rem;
+  padding: 0;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.rating-rules li {
+  margin-bottom: 0.3rem;
+}
+
+.rating-rules li:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 480px) {
+  .faq-main {
+    padding: 1.5rem 1rem 2rem;
   }
 }

@@ -148,27 +148,44 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-const controlPanel = document.getElementById('controlPanel');
-const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
-const infoToggleBtn = document.getElementById('infoToggle');
+const ABOUT_DIALOG_STORAGE_KEY = 'i2g-hide-about-dialog';
 
-function setSidebarVisible(visible) {
-  controlPanel.hidden = !visible;
-  infoToggleBtn.setAttribute('aria-expanded', String(visible));
-  const label = visible ? 'Hide the about panel' : 'Show the about panel';
-  infoToggleBtn.setAttribute('aria-label', label);
-  infoToggleBtn.setAttribute('title', label);
+const aboutDialog = document.getElementById('aboutDialog');
+const infoToggleBtn = document.getElementById('infoToggle');
+const hideAboutCheckbox = document.getElementById('hideAboutCheckbox');
+
+function getHideAboutPreference() {
+  try {
+    return localStorage.getItem(ABOUT_DIALOG_STORAGE_KEY) === 'true';
+  } catch {
+    // localStorage can throw in private-browsing/storage-blocked contexts —
+    // fall back to always showing the dialog on load in that case.
+    return false;
+  }
 }
 
-sidebarCloseBtn.addEventListener('click', () => {
-  setSidebarVisible(false);
-  // sidebarCloseBtn lives inside #controlPanel, so hiding it hides its own
-  // currently-focused button — without this, focus would silently drop to <body>.
-  infoToggleBtn.focus();
+function openAboutDialog() {
+  hideAboutCheckbox.checked = getHideAboutPreference();
+  aboutDialog.showModal();
+}
+
+// Fires on every close, whether via the X button, the Continue button, or
+// Escape — each is the user's chance to set (or clear) their preference.
+aboutDialog.addEventListener('close', () => {
+  try {
+    localStorage.setItem(ABOUT_DIALOG_STORAGE_KEY, String(hideAboutCheckbox.checked));
+  } catch {
+    // Ignore storage failures — worst case the dialog just shows again next time.
+  }
 });
+
 infoToggleBtn.addEventListener('click', () => {
-  setSidebarVisible(infoToggleBtn.getAttribute('aria-expanded') !== 'true');
+  openAboutDialog();
 });
+
+if (!getHideAboutPreference()) {
+  openAboutDialog();
+}
 
 setupDropdown('contactToggle', 'contactPanel');
 

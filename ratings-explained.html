@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How Ratings Are Assigned &ndash; Restaurant Inspection Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="content-page">
+    <a class="skip-link" href="#ratingsMain">Skip to page content</a>
+
+    <header class="app-header">
+      <img class="header-logo" src="./images/header-logo.png" alt="" />
+      <div class="app-header-text">
+        <h1>Restaurant Inspection Ratings</h1>
+        <p class="app-subtitle">Douglas County Health Department</p>
+      </div>
+    </header>
+
+    <nav class="back-nav" aria-label="Page">
+      <a class="back-link" href="./index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Back to map
+      </a>
+    </nav>
+
+    <main id="ratingsMain" class="faq-main" aria-labelledby="ratingsHeading">
+      <h2 id="ratingsHeading">How Ratings Are Assigned</h2>
+      <section aria-labelledby="overviewHeading">
+        <h2 id="overviewHeading">Overview</h2>
+        <p>
+          Inspection ratings have changed to an A, B, C, D, F format, with an F rating representing closure.
+          Ratings are strictly based on the number of violations observed during a routine inspection and the
+          correlating tables below. Inspectors have no discretion regarding the assigned rating.
+        </p>
+      </section>
+
+      <section aria-labelledby="categoriesHeading">
+        <h2 id="categoriesHeading">Violation categories</h2>
+        <dl class="faq-freq-dl">
+          <dt>Priority (P)</dt>
+          <dd>
+            An item whose application contributes directly to the elimination, prevention, or reduction to an
+            acceptable level of hazards associated with foodborne illness or injury, and there is no other
+            provision that more directly controls the hazard.
+          </dd>
+          <dt>Priority Foundation (Pf)</dt>
+          <dd>An item whose application supports, facilitates, or enables one or more Priority items.</dd>
+          <dt>Core (C)</dt>
+          <dd>
+            An item that usually relates to general sanitation, operational controls, sanitation standard
+            operating procedures, facilities or structures, equipment design, or general maintenance.
+          </dd>
+        </dl>
+      </section>
+
+      <section aria-labelledby="matrixSmallHeading">
+        <h2 id="matrixSmallHeading">Establishments with 5 or fewer facilities</h2>
+        <p>
+          Find the rating by matching the number of Priority (P) violations, listed down the left side, with the
+          number of Priority Foundation (Pf) violations, listed across the top.
+        </p>
+        <div class="rating-matrix-wrap" role="region" tabindex="0" aria-labelledby="matrixSmallCaption">
+          <table class="rating-matrix">
+            <caption id="matrixSmallCaption">Rating by Priority (P) and Priority Foundation (Pf) violation count &ndash; establishments with 5 or fewer facilities</caption>
+            <thead>
+              <tr>
+                <th scope="col">P \ Pf</th>
+                <th scope="col">0</th>
+                <th scope="col">1</th>
+                <th scope="col">2</th>
+                <th scope="col">3</th>
+                <th scope="col">4</th>
+                <th scope="col">5</th>
+                <th scope="col">6</th>
+                <th scope="col">7</th>
+                <th scope="col">8+</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">0</th>
+                <td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td>
+                <td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td>
+              </tr>
+              <tr>
+                <th scope="row">1</th>
+                <td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-b">B</td>
+                <td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-b">B</td><td class="grade-b">B</td>
+                <td class="grade-b">B</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-b">B</td>
+                <td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-c">C</td>
+                <td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td class="grade-b">B</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td>
+                <td class="grade-c">C</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">6</th>
+                <td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td>
+                <td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">7</th>
+                <td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td><td class="grade-d">D</td>
+                <td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">8+</th>
+                <td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+                <td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="rating-rules">
+          <li>8 or more Core violations result in the rating lowering one grade.</li>
+          <li>3 or more repeats of Priority violations result in the lowering of one grade.</li>
+          <li>4 or more repeats of Priority Foundation violations result in the lowering of one grade.</li>
+          <li>5 or more repeats of a combination of Priority and Priority Foundation violations result in the lowering of one grade.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="matrixLargeHeading">
+        <h2 id="matrixLargeHeading">Establishments with 6 or more facilities</h2>
+        <p>
+          Find the rating by matching the number of Priority (P) violations, listed down the left side, with the
+          number of Priority Foundation (Pf) violations, listed across the top.
+        </p>
+        <div class="rating-matrix-wrap" role="region" tabindex="0" aria-labelledby="matrixLargeCaption">
+          <table class="rating-matrix">
+            <caption id="matrixLargeCaption">Rating by Priority (P) and Priority Foundation (Pf) violation count &ndash; establishments with 6 or more facilities</caption>
+            <thead>
+              <tr>
+                <th scope="col">P \ Pf</th>
+                <th scope="col">0-2</th>
+                <th scope="col">3-5</th>
+                <th scope="col">6-8</th>
+                <th scope="col">9-11</th>
+                <th scope="col">12-14</th>
+                <th scope="col">15-17</th>
+                <th scope="col">18-20</th>
+                <th scope="col">21-23</th>
+                <th scope="col">24+</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">0-2</th>
+                <td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td>
+                <td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td>
+              </tr>
+              <tr>
+                <th scope="row">3-5</th>
+                <td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-b">B</td>
+                <td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">6-8</th>
+                <td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-b">B</td><td class="grade-b">B</td>
+                <td class="grade-b">B</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">9-11</th>
+                <td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-b">B</td>
+                <td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">12-14</th>
+                <td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-b">B</td><td class="grade-c">C</td>
+                <td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">15-17</th>
+                <td class="grade-b">B</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td>
+                <td class="grade-c">C</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">18-20</th>
+                <td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-c">C</td>
+                <td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">21-23</th>
+                <td class="grade-c">C</td><td class="grade-c">C</td><td class="grade-d">D</td><td class="grade-d">D</td>
+                <td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+              <tr>
+                <th scope="row">24+</th>
+                <td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+                <td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td><td class="grade-d">D</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="rating-rules">
+          <li>16 or more Core violations result in the rating lowering one grade.</li>
+          <li>6 or more repeats of Priority violations result in the lowering of one grade.</li>
+          <li>9 or more repeats of Priority Foundation violations result in the lowering of one grade.</li>
+          <li>12 or more repeats of a combination of Priority and Priority Foundation violations result in the lowering of one grade.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <a class="footer-logo-link" href="https://maps.dogis.org/">
+        <img
+          class="footer-logo"
+          src="https://s3.amazonaws.com/dcgis_photos/Logos/DCgis_web_logo_no_shadow_82x31.png"
+          alt="Douglas County GIS maps site"
+          width="58"
+          height="22"
+        />
+      </a>
+      <span class="footer-text">Powered by Douglas County GIS</span>
+    </footer>
+  </body>
+</html>
