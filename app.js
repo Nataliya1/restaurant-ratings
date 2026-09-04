@@ -5,12 +5,14 @@ import BasemapGallery from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Base
 import Expand from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Expand.js';
 import Home from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Home.js';
 import Locate from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Locate.js';
+import Features from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Features.js';
 
 import { WEBMAP_ITEM_ID, RESTAURANT_LAYER_TITLE, NAME_FIELD_RESTAURANT } from './js/config.js';
 import { buildRestaurantDefinitionExpression } from './js/filters.js';
 import { queryLatestObjectIds } from './js/lists.js';
 import { createSearchWidget } from './js/search.js';
 import { setupHeader } from './js/header.js';
+import { setupInfoPanel } from './js/info-panel.js';
 import { enhancePopupAccessibility } from './js/popup-accessibility.js';
 
 const container = document.getElementById('viewDiv');
@@ -54,36 +56,49 @@ const filterState = {
   ratings: { A: true, B: true, C: true, D: true, F: true, OTHER: true }
 };
 
-// index.html is the only page with an About panel — a static, collapsible left
+// index.html is the only page with an info panel — a static, collapsible left
 // sidebar, open by default — so it's the only page whose header has an info icon
 // at all; the other pages just call setupHeader() with no options.
-const { setupDropdown } = setupHeader({ aboutPanelId: 'aboutPanel' });
+const { setupDropdown } = setupHeader();
 setupDropdown('mapLayersToggle', 'mapLayersPanel');
+
+const infoPanel = setupInfoPanel({
+  toggleButtonId: 'infoToggle',
+  panelId: 'infoPanel',
+  closeButtonId: 'infoPanelCloseBtn',
+  tabs: [
+    { tabId: 'aboutTab', panelId: 'aboutTabPanel' },
+    { tabId: 'detailsTab', panelId: 'detailsTabPanel' }
+  ],
+  detailsTabId: 'detailsTab'
+});
 
 view.when(
   async () => {
     console.log('ArcGIS web map loaded successfully.');
 
-    // Docked (rather than floating next to whatever was clicked) so the popup always
-    // lands in a predictable spot — easier to find with a screen reader, and never
-    // covers the point you just selected. buttonEnabled: false hides Esri's own
-    // dock-toggle button, since docking is no longer optional here. view.popup isn't
-    // the fully-initialized widget instance (watch() isn't callable on it yet) until
-    // view.when() resolves, so this has to happen here rather than right after
-    // `new MapView(...)`.
-    view.popup.dockEnabled = true;
-    view.popup.dockOptions = {
-      buttonEnabled: false,
-      breakpoint: false,
-      position: 'bottom-right'
-    };
-    enhancePopupAccessibility(view, NAME_FIELD_RESTAURANT);
+    // Renders into the Facility Details tab (see index.html's #facilityFeaturesContainer)
+    // instead of floating over the map, so it always lands in a predictable spot —
+    // easier to find with a screen reader, and never covers the point you just
+    // selected. Assigning a Features widget to view.popup is Esri's documented way
+    // to redirect the view's normal click-to-select/search-result-select behavior
+    // (hit-testing, highlighting, etc.) at a custom container instead of the
+    // default floating popup — those built-in interactions don't need to be
+    // hand-rolled. view.popup isn't fully initialized (watch() isn't callable on
+    // the default one yet) until view.when() resolves, so this has to happen here
+    // rather than right after `new MapView(...)`.
+    view.popup = new Features({ view, container: 'facilityFeaturesContainer' });
+    enhancePopupAccessibility(view, NAME_FIELD_RESTAURANT, {
+      container: document.getElementById('detailsTabPanel'),
+      emptyStateEl: document.getElementById('facilityDetailsEmpty'),
+      onSelect: infoPanel.showDetailsTab
+    });
 
-    // Pans (without changing zoom) so the clicked feature stays centered rather
-    // than possibly landing behind the now-docked popup — fires on every
+    // Pans (without changing zoom) so the clicked feature stays centered in the
+    // remaining map space next to the open info panel — fires on every
     // selectedFeature change, so this also re-centers when picking a different
-    // feature, or paging between multiple stacked records, while the popup
-    // stays open.
+    // feature, or paging between multiple stacked records, while its details
+    // stay shown.
     reactiveUtils.watch(
       () => view.popup.selectedFeature,
       (feature) => {

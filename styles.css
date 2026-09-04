@@ -420,12 +420,12 @@ body {
   flex-direction: row;
 }
 
-.about-panel {
+.info-panel {
   flex: 0 0 auto;
   width: 320px;
   max-width: 100%;
-  overflow-y: auto;
-  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
   background: var(--color-panel);
   border-right: 1px solid var(--color-border-warm);
 }
@@ -433,26 +433,44 @@ body {
 /* The class selector above and the browser's built-in [hidden] rule are the same
    specificity, and this stylesheet loads after the UA one — without this, the
    panel's own display value would win and it would stay visible while "hidden". */
-.about-panel[hidden] {
+.info-panel[hidden] {
   display: none;
 }
 
-.about-panel-header {
+.info-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-bottom: 0.6rem;
+  flex: 0 0 auto;
+  padding: 0.5rem 0.5rem 0 1.25rem;
+  border-bottom: 1px solid var(--color-border-warm);
 }
 
-.about-panel h2 {
-  margin: 0;
+.info-panel-tabs {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.info-panel-tab {
+  padding: 0.6rem 0.1rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  color: #111827;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+  cursor: pointer;
+  margin-right: 0.9rem;
 }
 
-.about-panel-close-btn {
+.info-panel-tab[aria-selected="true"] {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.info-panel-close-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -464,25 +482,41 @@ body {
   border-radius: 4px;
   color: #4b5563;
   cursor: pointer;
+  margin-bottom: 0.4rem;
 }
 
-.about-panel-close-btn:hover {
+.info-panel-close-btn:hover {
   background: var(--color-accent-soft);
 }
 
-.about-panel-close-btn svg {
+.info-panel-close-btn svg {
   width: 18px;
   height: 18px;
 }
 
-.about-panel h3 {
+.info-tabpanel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+}
+
+.info-tabpanel[hidden] {
+  display: none;
+}
+
+.info-tabpanel h3 {
   margin: 1rem 0 0.4rem;
   font-family: var(--font-display);
   font-size: 0.95rem;
   color: #111827;
 }
 
-.about-panel p {
+.info-tabpanel h3:first-child {
+  margin-top: 0;
+}
+
+.info-tabpanel p {
   margin: 0 0 0.75rem;
   font-size: 0.9rem;
   line-height: 1.5;
@@ -503,6 +537,11 @@ body {
 
 .about-panel-tools li:last-child {
   margin-bottom: 0;
+}
+
+.facility-details-empty {
+  font-style: italic;
+  color: #6b7280;
 }
 
 .app-footer {
@@ -661,7 +700,7 @@ body {
     min-height: 45vh;
   }
 
-  .about-panel {
+  .info-panel {
     width: auto;
     max-height: 40vh;
     border-right: none;

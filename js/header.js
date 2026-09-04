@@ -2,15 +2,10 @@
 // dropdown/disclosure buttons in it (Contact us, Accessibility statement — pages
 // with their own extra dropdowns, like index.html's Map layers, call the returned
 // setupDropdown for those). Centralized here rather than duplicated per page so a
-// future change to any of this only has to happen once.
-
-/**
- * @param {{ aboutPanelId?: string|null }} options - aboutPanelId points the
- *   header's info icon (#infoToggle) at a static, persistent About panel to
- *   show/hide — only index.html, which has a left-hand About panel next to the
- *   map, passes this and has that icon at all; other pages have neither.
- */
-export function setupHeader({ aboutPanelId = null } = {}) {
+// future change to any of this only has to happen once. index.html's info panel
+// (its header info icon, and the panel's own tabs/close button) is handled
+// separately by js/info-panel.js, since that panel only exists on that one page.
+export function setupHeader() {
   const openDropdowns = new Map(); // panel -> button, for outside-click/Escape close
 
   function closeDropdown(panel) {
@@ -95,34 +90,6 @@ export function setupHeader({ aboutPanelId = null } = {}) {
       menuToggleBtn.focus();
     }
   });
-
-  const infoToggleBtn = document.getElementById('infoToggle');
-
-  // Unlike the dropdowns above, this panel is static/persistent: it should only
-  // close when the user re-clicks the info icon, not on outside clicks or Escape,
-  // so it's wired up separately from setupDropdown/closeAllDropdowns.
-  if (aboutPanelId && infoToggleBtn) {
-    const aboutPanel = document.getElementById(aboutPanelId);
-
-    if (aboutPanel) {
-      const setAboutPanelOpen = (open) => {
-        aboutPanel.hidden = !open;
-        infoToggleBtn.setAttribute('aria-expanded', String(open));
-      };
-
-      infoToggleBtn.addEventListener('click', () => {
-        setAboutPanelOpen(aboutPanel.hidden);
-      });
-
-      const closeBtn = aboutPanel.querySelector('.about-panel-close-btn');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-          setAboutPanelOpen(false);
-          infoToggleBtn.focus();
-        });
-      }
-    }
-  }
 
   setupDropdown('contactToggle', 'contactPanel');
   setupDropdown('accessibilityToggle', 'accessibilityPanel');
