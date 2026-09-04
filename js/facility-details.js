@@ -1,4 +1,5 @@
 import Feature from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Feature.js';
+import { FACILITY_ZOOM_SCALE } from './config.js';
 
 /**
  * Renders every currently-selected facility's popup content into `container` as
@@ -57,7 +58,9 @@ export function renderFacilityDetails({ view, container }) {
         Zoom to
       `;
       zoomBtn.addEventListener('click', () => {
-        if (graphic.geometry) view.goTo(graphic.geometry).catch(() => {});
+        if (graphic.geometry) {
+          view.goTo({ target: graphic.geometry, scale: FACILITY_ZOOM_SCALE }).catch(() => {});
+        }
       });
       item.appendChild(zoomBtn);
 

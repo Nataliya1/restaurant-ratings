@@ -1,7 +1,7 @@
 import Search from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Search.js';
 import LocatorSearchSource from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Search/LocatorSearchSource.js';
 import LayerSearchSource from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Search/LayerSearchSource.js';
-import { CUSTOM_GEOCODER_URL, CUSTOM_GEOCODER_NAME, NAME_FIELD_RESTAURANT } from './config.js';
+import { CUSTOM_GEOCODER_URL, CUSTOM_GEOCODER_NAME, NAME_FIELD_RESTAURANT, FACILITY_ZOOM_SCALE } from './config.js';
 
 /**
  * Builds the Search widget as a single combined bar: every source (address
@@ -37,7 +37,7 @@ export function createSearchWidget({ view, restaurantLayer }) {
       outFields: ['*'],
       placeholder: 'Search a facility name',
       maxSuggestions: 10,
-      zoomScale: 2000
+      zoomScale: FACILITY_ZOOM_SCALE
     })
   ];
 
