@@ -567,22 +567,28 @@ body {
 .facility-feature-zoom-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  margin-top: 0.6rem;
-  min-height: 36px;
-  padding: 0.35rem 0.75rem;
-  background: var(--color-panel);
-  border: 1px solid #6b7280;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  min-height: 24px;
+  padding: 0.15rem 0.1rem;
+  background: none;
+  border: none;
   border-radius: 4px;
-  font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-family: inherit;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-accent);
   cursor: pointer;
 }
 
+.facility-feature-zoom-btn svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+
 .facility-feature-zoom-btn:hover {
-  background: var(--color-accent-soft);
+  text-decoration: underline;
 }
 
 .app-footer {
