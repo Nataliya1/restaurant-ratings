@@ -1010,9 +1010,30 @@ body {
 }
 
 
+.matrix-scroll-hint {
+  display: none;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #4b5563;
+  margin: 0 0 0.35rem;
+}
+
 .rating-matrix-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin: 0 0 0.75rem;
+}
+
+/* .rating-matrix's 640px min-width stops fitting inside .faq-main's content box
+   (max-width 760px minus its padding) somewhere below ~700px viewport width —
+   below that, the table scrolls horizontally within .rating-matrix-wrap. Native
+   scrollbars are easy to miss (especially on touch devices, where they're hidden
+   until mid-scroll), so this hint is the reliable way to tell everyone — not just
+   mouse users who might spot a scrollbar — that there are more columns to see. */
+@media (max-width: 720px) {
+  .matrix-scroll-hint {
+    display: block;
+  }
 }
 
 .rating-matrix {
