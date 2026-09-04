@@ -289,13 +289,6 @@ body {
   border-bottom: 1px solid var(--color-border-warm);
 }
 
-/* The class selector above and the browser's built-in [hidden] rule are the same
-   specificity, and this stylesheet loads after the UA one — without this, display:
-   flex would win and the panel would stay visible while "hidden". */
-.rating-ribbon[hidden] {
-  display: none;
-}
-
 .see-list-btn {
   display: inline-flex;
   align-items: center;
@@ -424,7 +417,61 @@ body {
   flex: 1;
   min-height: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+}
+
+.about-panel {
+  flex: 0 0 auto;
+  width: 320px;
+  max-width: 100%;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  background: var(--color-panel);
+  border-right: 1px solid var(--color-border-warm);
+}
+
+/* The class selector above and the browser's built-in [hidden] rule are the same
+   specificity, and this stylesheet loads after the UA one — without this, the
+   panel's own display value would win and it would stay visible while "hidden". */
+.about-panel[hidden] {
+  display: none;
+}
+
+.about-panel h2 {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.about-panel h3 {
+  margin: 1rem 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.about-panel p {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.about-panel-tools {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.about-panel-tools li {
+  margin-bottom: 0.6rem;
+}
+
+.about-panel-tools li:last-child {
+  margin-bottom: 0;
 }
 
 .app-footer {
@@ -712,9 +759,20 @@ body {
 }
 
 @media (max-width: 720px) {
+  .app-body {
+    flex-direction: column;
+  }
+
   #viewDiv {
     flex: 1 1 auto;
     min-height: 45vh;
+  }
+
+  .about-panel {
+    width: auto;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-warm);
   }
 
   .mobile-menu {

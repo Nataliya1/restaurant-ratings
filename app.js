@@ -54,10 +54,11 @@ const filterState = {
   ratings: { A: true, B: true, C: true, D: true, F: true, OTHER: true }
 };
 
-// index.html is the only page with a filter panel above the map, so — unlike the
-// other pages, which just call setupHeader() for the About dialog — the header's
-// info icon here toggles that panel's visibility instead.
-const { setupDropdown } = setupHeader({ filterPanelId: 'filterPanel' });
+// index.html is the only page with a persistent About panel (a static, collapsible
+// left sidebar) instead of the About dialog the other pages use, so — unlike those
+// pages, which just call setupHeader() — the header's info icon here toggles that
+// panel's visibility.
+const { setupDropdown } = setupHeader({ aboutPanelId: 'aboutPanel' });
 setupDropdown('mapLayersToggle', 'mapLayersPanel');
 
 view.when(
