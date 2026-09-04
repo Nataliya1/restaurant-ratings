@@ -7,12 +7,14 @@
 const ABOUT_DIALOG_STORAGE_KEY = 'i2g-hide-about-dialog';
 
 /**
- * @param {{ autoOpenAbout?: boolean }} options - autoOpenAbout shows the About
- *   dialog on load (unless the user previously checked "don't show again") — only
- *   index.html does this, since popping up an onboarding dialog on someone reading
- *   the FAQ or facility list would just be in the way.
+ * @param {{ autoOpenAbout?: boolean, filterPanelId?: string|null }} options -
+ *   autoOpenAbout shows the About dialog on load (unless the user previously
+ *   checked "don't show again") — only pages with an #aboutDialog use this.
+ *   filterPanelId points the header's info icon (#infoToggle) at a collapsible
+ *   region to show/hide instead of opening the About dialog — only index.html,
+ *   whose filter panel sits above the map, passes this.
  */
-export function setupHeader({ autoOpenAbout = false } = {}) {
+export function setupHeader({ autoOpenAbout = false, filterPanelId = null } = {}) {
   const openDropdowns = new Map(); // panel -> button, for outside-click/Escape close
 
   function closeDropdown(panel) {
@@ -98,11 +100,32 @@ export function setupHeader({ autoOpenAbout = false } = {}) {
     }
   });
 
-  const aboutDialog = document.getElementById('aboutDialog');
   const infoToggleBtn = document.getElementById('infoToggle');
+
+  if (filterPanelId && infoToggleBtn) {
+    const filterPanel = document.getElementById(filterPanelId);
+
+    if (filterPanel) {
+      const setFilterPanelOpen = (open) => {
+        filterPanel.hidden = !open;
+        infoToggleBtn.setAttribute('aria-expanded', String(open));
+        const label = open ? 'Hide filters panel' : 'Show filters panel';
+        infoToggleBtn.setAttribute('aria-label', label);
+        infoToggleBtn.title = label;
+        const labelSpan = infoToggleBtn.querySelector('.header-action-label');
+        if (labelSpan) labelSpan.textContent = label;
+      };
+
+      infoToggleBtn.addEventListener('click', () => {
+        setFilterPanelOpen(filterPanel.hidden);
+      });
+    }
+  }
+
+  const aboutDialog = document.getElementById('aboutDialog');
   const hideAboutCheckbox = document.getElementById('hideAboutCheckbox');
 
-  if (aboutDialog && infoToggleBtn && hideAboutCheckbox) {
+  if (!filterPanelId && aboutDialog && infoToggleBtn && hideAboutCheckbox) {
     const getHideAboutPreference = () => {
       try {
         return localStorage.getItem(ABOUT_DIALOG_STORAGE_KEY) === 'true';

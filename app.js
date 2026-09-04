@@ -54,9 +54,10 @@ const filterState = {
   ratings: { A: true, B: true, C: true, D: true, F: true, OTHER: true }
 };
 
-// index.html is the primary entry point, so — unlike the other pages, which just
-// call setupHeader() — the About dialog auto-opens here on first visit.
-const { setupDropdown } = setupHeader({ autoOpenAbout: true });
+// index.html is the only page with a filter panel above the map, so — unlike the
+// other pages, which just call setupHeader() for the About dialog — the header's
+// info icon here toggles that panel's visibility instead.
+const { setupDropdown } = setupHeader({ filterPanelId: 'filterPanel' });
 setupDropdown('mapLayersToggle', 'mapLayersPanel');
 
 view.when(
