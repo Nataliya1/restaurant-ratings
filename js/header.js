@@ -1,20 +1,16 @@
-// Shared header behavior for every page: the mobile hamburger menu, the
+// Shared header behavior for every page: the mobile hamburger menu, and the
 // dropdown/disclosure buttons in it (Contact us, Accessibility statement — pages
 // with their own extra dropdowns, like index.html's Map layers, call the returned
-// setupDropdown for those), and the About dialog. Centralized here rather than
-// duplicated per page so a future change to any of this only has to happen once.
-
-const ABOUT_DIALOG_STORAGE_KEY = 'i2g-hide-about-dialog';
+// setupDropdown for those). Centralized here rather than duplicated per page so a
+// future change to any of this only has to happen once.
 
 /**
- * @param {{ autoOpenAbout?: boolean, aboutPanelId?: string|null }} options -
- *   autoOpenAbout shows the About dialog on load (unless the user previously
- *   checked "don't show again") — only pages with an #aboutDialog use this.
- *   aboutPanelId points the header's info icon (#infoToggle) at a static,
- *   persistent About panel to show/hide instead of opening the About dialog —
- *   only index.html, which has a left-hand About panel next to the map, passes this.
+ * @param {{ aboutPanelId?: string|null }} options - aboutPanelId points the
+ *   header's info icon (#infoToggle) at a static, persistent About panel to
+ *   show/hide — only index.html, which has a left-hand About panel next to the
+ *   map, passes this and has that icon at all; other pages have neither.
  */
-export function setupHeader({ autoOpenAbout = false, aboutPanelId = null } = {}) {
+export function setupHeader({ aboutPanelId = null } = {}) {
   const openDropdowns = new Map(); // panel -> button, for outside-click/Escape close
 
   function closeDropdown(panel) {
@@ -117,44 +113,6 @@ export function setupHeader({ autoOpenAbout = false, aboutPanelId = null } = {})
       infoToggleBtn.addEventListener('click', () => {
         setAboutPanelOpen(aboutPanel.hidden);
       });
-    }
-  }
-
-  const aboutDialog = document.getElementById('aboutDialog');
-  const hideAboutCheckbox = document.getElementById('hideAboutCheckbox');
-
-  if (!aboutPanelId && aboutDialog && infoToggleBtn && hideAboutCheckbox) {
-    const getHideAboutPreference = () => {
-      try {
-        return localStorage.getItem(ABOUT_DIALOG_STORAGE_KEY) === 'true';
-      } catch {
-        // localStorage can throw in private-browsing/storage-blocked contexts —
-        // fall back to always showing the dialog on load in that case.
-        return false;
-      }
-    };
-
-    const openAboutDialog = () => {
-      hideAboutCheckbox.checked = getHideAboutPreference();
-      aboutDialog.showModal();
-    };
-
-    // Fires on every close, whether via the X button, the Continue button, or
-    // Escape — each is the user's chance to set (or clear) their preference.
-    aboutDialog.addEventListener('close', () => {
-      try {
-        localStorage.setItem(ABOUT_DIALOG_STORAGE_KEY, String(hideAboutCheckbox.checked));
-      } catch {
-        // Ignore storage failures — worst case the dialog just shows again next time.
-      }
-    });
-
-    infoToggleBtn.addEventListener('click', () => {
-      openAboutDialog();
-    });
-
-    if (autoOpenAbout && !getHideAboutPreference()) {
-      openAboutDialog();
     }
   }
 

@@ -54,10 +54,9 @@ const filterState = {
   ratings: { A: true, B: true, C: true, D: true, F: true, OTHER: true }
 };
 
-// index.html is the only page with a persistent About panel (a static, collapsible
-// left sidebar) instead of the About dialog the other pages use, so — unlike those
-// pages, which just call setupHeader() — the header's info icon here toggles that
-// panel's visibility.
+// index.html is the only page with an About panel — a static, collapsible left
+// sidebar, open by default — so it's the only page whose header has an info icon
+// at all; the other pages just call setupHeader() with no options.
 const { setupDropdown } = setupHeader({ aboutPanelId: 'aboutPanel' });
 setupDropdown('mapLayersToggle', 'mapLayersPanel');
 

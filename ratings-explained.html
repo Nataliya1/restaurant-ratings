@@ -29,14 +29,6 @@
         </button>
 
         <nav class="header-actions" id="headerActionsMenu" aria-label="Help and contact links">
-        <button type="button" class="header-action" id="infoToggle" aria-haspopup="dialog" aria-label="About this site" title="About this site">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <circle cx="12" cy="12" r="9" />
-            <line x1="12" y1="11" x2="12" y2="16" />
-            <circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none" />
-          </svg>
-          <span class="header-action-label">About</span>
-        </button>
         <a class="header-action" href="./ratings-explained.html" aria-label="How ratings are assigned" title="How ratings are assigned">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <circle cx="12" cy="12" r="9" />
@@ -322,62 +314,6 @@
       </a>
       <span class="footer-text">Powered by Douglas County GIS</span>
     </footer>
-
-    <dialog id="aboutDialog" class="about-dialog" aria-labelledby="aboutDialogHeading">
-      <form method="dialog" class="about-dialog-form">
-        <div class="about-dialog-header">
-          <h2 id="aboutDialogHeading">About this site</h2>
-          <button type="submit" value="close" class="about-dialog-close-btn" aria-label="Close">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-              <line x1="5" y1="5" x2="19" y2="19" />
-              <line x1="19" y1="5" x2="5" y2="19" />
-            </svg>
-          </button>
-        </div>
-        <div class="about-dialog-body" tabindex="0">
-          <p>
-            This site shows current health inspection ratings for restaurants, schools, and mobile food trucks in
-            Douglas County, Nebraska. Ratings and inspection details come from the Douglas County Health
-            Department's food establishment inspection program.
-          </p>
-
-          <h3>Getting around this site</h3>
-          <ul class="about-dialog-tools">
-            <li>
-              <strong>Interactive map</strong> &mdash; search by facility name or address, choose which facility
-              types are shown, and select any point for its rating and inspection details.
-            </li>
-            <li>
-              <strong>See List</strong> &mdash; a full, searchable list of every restaurant, school, and mobile
-              food truck, grouped by type, each with a Download CSV option. Mobile food trucks don't have a fixed
-              location, so they're listed here rather than mapped.
-            </li>
-            <li>
-              <strong>Filter by rating</strong> &mdash; check or uncheck A, B, C, D, F, or Not rated / other to
-              narrow results, on both the map and the facility list.
-            </li>
-            <li>
-              <strong>How ratings are assigned</strong> (this page) and <strong>FAQ</strong> &mdash; background
-              on the inspection program and answers to common questions.
-            </li>
-            <li>
-              <strong>Language</strong> icon (in the header) &mdash; translate this site into one of 30 languages.
-            </li>
-            <li>
-              <strong>Contact us</strong> and <strong>Accessibility statement</strong> icons (also in the header)
-              &mdash; for questions or accessibility needs.
-            </li>
-          </ul>
-        </div>
-        <div class="about-dialog-footer">
-          <label class="about-dialog-checkbox">
-            <input type="checkbox" id="hideAboutCheckbox" />
-            Don't show this message automatically next time
-          </label>
-          <button type="submit" value="continue" class="about-dialog-continue-btn">Continue</button>
-        </div>
-      </form>
-    </dialog>
 
     <script src="./js/translate-init.js"></script>
     <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
