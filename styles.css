@@ -437,11 +437,42 @@ body {
   display: none;
 }
 
+.about-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
 .about-panel h2 {
-  margin: 0 0 0.6rem;
+  margin: 0;
   font-family: var(--font-display);
   font-size: 1.1rem;
   color: #111827;
+}
+
+.about-panel-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.about-panel-close-btn:hover {
+  background: var(--color-accent-soft);
+}
+
+.about-panel-close-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .about-panel h3 {

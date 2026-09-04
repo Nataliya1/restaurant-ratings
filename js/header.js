@@ -113,6 +113,14 @@ export function setupHeader({ aboutPanelId = null } = {}) {
       infoToggleBtn.addEventListener('click', () => {
         setAboutPanelOpen(aboutPanel.hidden);
       });
+
+      const closeBtn = aboutPanel.querySelector('.about-panel-close-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          setAboutPanelOpen(false);
+          infoToggleBtn.focus();
+        });
+      }
     }
   }
 
