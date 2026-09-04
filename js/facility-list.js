@@ -90,11 +90,10 @@ function buildCard(feature, { nameField, kind }) {
     dd.className = 'facility-card-rating';
     const img = document.createElement('img');
     img.src = gradeImageSrc(rating);
-    img.alt = '';
+    img.alt = rating;
     img.width = 22;
     img.height = 22;
     dd.appendChild(img);
-    dd.appendChild(document.createTextNode(rating));
     meta.appendChild(dt);
     meta.appendChild(dd);
   }
