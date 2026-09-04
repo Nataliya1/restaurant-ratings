@@ -13,6 +13,7 @@ import { queryLatestObjectIds } from './js/lists.js';
 import { createSearchWidget } from './js/search.js';
 import { setupHeader } from './js/header.js';
 import { setupInfoPanel } from './js/info-panel.js';
+import { renderFacilityDetails } from './js/facility-details.js';
 import { enhancePopupAccessibility } from './js/popup-accessibility.js';
 
 const container = document.getElementById('viewDiv');
@@ -77,17 +78,31 @@ view.when(
   async () => {
     console.log('ArcGIS web map loaded successfully.');
 
-    // Renders into the Facility Details tab (see index.html's #facilityFeaturesContainer)
-    // instead of floating over the map, so it always lands in a predictable spot —
-    // easier to find with a screen reader, and never covers the point you just
-    // selected. Assigning a Features widget to view.popup is Esri's documented way
-    // to redirect the view's normal click-to-select/search-result-select behavior
-    // (hit-testing, highlighting, etc.) at a custom container instead of the
-    // default floating popup — those built-in interactions don't need to be
-    // hand-rolled. view.popup isn't fully initialized (watch() isn't callable on
+    // Assigning a Features widget to view.popup is Esri's documented way to
+    // redirect the view's normal click-to-select/search-result-select behavior
+    // (hit-testing, highlighting, etc.) away from the default floating popup —
+    // those built-in interactions don't need to be hand-rolled. Its own rendering
+    // goes unused, though: Features shows one selected feature at a time with
+    // next/previous paging (confirmed by reading its source — there's no built-in
+    // "list every selected feature at once" mode), which both looks like a popup
+    // still embedded in the panel and hides facilities beyond the first. It's
+    // given a container that's never attached to the page — just enough to
+    // satisfy the widget, nothing to show — and js/facility-details.js renders
+    // every one of view.popup.features into the actual visible Facility Details
+    // tab itself. view.popup isn't fully initialized (watch() isn't callable on
     // the default one yet) until view.when() resolves, so this has to happen here
     // rather than right after `new MapView(...)`.
-    view.popup = new Features({ view, container: 'facilityFeaturesContainer' });
+    view.popup = new Features({ view, container: document.createElement('div') });
+
+    const facilityDetails = renderFacilityDetails({
+      view,
+      container: document.getElementById('facilityFeaturesContainer')
+    });
+    reactiveUtils.watch(
+      () => view.popup.features,
+      (features) => facilityDetails.render(features)
+    );
+
     enhancePopupAccessibility(view, NAME_FIELD_RESTAURANT, {
       container: document.getElementById('detailsTabPanel'),
       emptyStateEl: document.getElementById('facilityDetailsEmpty'),

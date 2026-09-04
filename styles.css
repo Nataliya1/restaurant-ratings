@@ -544,6 +544,47 @@ body {
   color: #6b7280;
 }
 
+.facility-feature-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.facility-feature-item {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--color-border-warm);
+}
+
+.facility-feature-item:first-child {
+  padding-top: 0;
+}
+
+.facility-feature-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.facility-feature-zoom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.6rem;
+  min-height: 36px;
+  padding: 0.35rem 0.75rem;
+  background: var(--color-panel);
+  border: 1px solid #6b7280;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+}
+
+.facility-feature-zoom-btn:hover {
+  background: var(--color-accent-soft);
+}
+
 .app-footer {
   display: flex;
   align-items: center;
