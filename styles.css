@@ -548,27 +548,23 @@ body {
   margin: 0;
   padding: 0;
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .facility-feature-item {
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--color-border-warm);
-}
-
-.facility-feature-item:first-child {
-  padding-top: 0;
-}
-
-.facility-feature-item:last-child {
-  padding-bottom: 0;
-  border-bottom: none;
+  padding: 0.5rem 0.65rem;
+  background: var(--color-paper);
+  border: 1px solid var(--color-border-warm);
+  border-radius: 6px;
 }
 
 .facility-feature-zoom-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
   min-height: 24px;
   padding: 0.15rem 0.1rem;
   background: none;
