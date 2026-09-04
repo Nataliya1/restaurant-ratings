@@ -11,6 +11,9 @@ import {
 import { buildRatingClause } from './filters.js';
 import { queryFacilityList, queryMobileList } from './lists.js';
 import { toCsv, downloadCsv } from './csv.js';
+import { setupHeader } from './header.js';
+
+setupHeader();
 
 // This page has no MapView/rendering — just WebMap.load() to reach the same two
 // data sources app.js uses, reusing its query/dedupe functions so "grouped by
@@ -120,12 +123,51 @@ function buildCard(feature, { nameField, kind }) {
   return li;
 }
 
-function renderGroup(listEl, countEl, features, { nameField, kind }) {
-  listEl.innerHTML = '';
+function appendCards(listEl, features, { nameField, kind }) {
   const frag = document.createDocumentFragment();
   features.forEach((feature) => frag.appendChild(buildCard(feature, { nameField, kind })));
   listEl.appendChild(frag);
+}
+
+// Thousands of cards up front is a lot for a screen reader or keyboard user to page
+// through, so each group renders only its first RENDER_LIMIT cards until the user
+// asks for more — via its "Show all" button, or (for the groups that start
+// collapsed) by opening the <details> itself. All of a group's data is already in
+// memory from the fetch below, so "load more" is just building/appending more <li>
+// elements, never an extra request.
+const RENDER_LIMIT = 15;
+
+function createGroupState({ listEl, countEl, statusEl, loadAllBtn, detailsEl, features, nameField, kind, label }) {
   countEl.textContent = `(${features.length})`;
+  return { listEl, countEl, statusEl, loadAllBtn, detailsEl, features, nameField, kind, label, rendered: 0 };
+}
+
+function updateLoadMoreUi(state) {
+  const total = state.features.length;
+  if (state.rendered >= total) {
+    state.loadAllBtn.hidden = true;
+    state.statusEl.textContent = total > RENDER_LIMIT ? `Showing all ${total.toLocaleString()} ${state.label}.` : '';
+  } else {
+    state.loadAllBtn.hidden = false;
+    state.loadAllBtn.textContent = `Show all ${total.toLocaleString()} ${state.label}`;
+    state.statusEl.textContent = `Showing ${state.rendered.toLocaleString()} of ${total.toLocaleString()} ${state.label}.`;
+  }
+}
+
+function renderMore(state, count) {
+  const start = state.rendered;
+  const end = Math.min(state.features.length, start + count);
+  appendCards(state.listEl, state.features.slice(start, end), { nameField: state.nameField, kind: state.kind });
+  state.rendered = end;
+  updateLoadMoreUi(state);
+}
+
+function ensureBuilt(state) {
+  if (state.rendered === 0) renderMore(state, RENDER_LIMIT);
+}
+
+function ensureFullyLoaded(state) {
+  if (state.rendered < state.features.length) renderMore(state, state.features.length - state.rendered);
 }
 
 const LIST_ID_TO_COUNT_ID = {
@@ -186,17 +228,49 @@ function applyFilters({ nameQuery, ratingState }) {
       queryMobileList(mobileTable, { nameFilter: '' })
     ]);
 
-    renderGroup(restaurantCardsEl, document.getElementById('restaurantsCount'), restaurants, {
+    const restaurantsState = createGroupState({
+      listEl: restaurantCardsEl,
+      countEl: document.getElementById('restaurantsCount'),
+      statusEl: document.getElementById('restaurantsLoadStatus'),
+      loadAllBtn: document.getElementById('restaurantsLoadAllBtn'),
+      detailsEl: document.getElementById('restaurantsGroup'),
+      features: restaurants,
       nameField: NAME_FIELD_RESTAURANT,
-      kind: 'restaurant'
+      kind: 'restaurant',
+      label: 'restaurants'
     });
-    renderGroup(schoolCardsEl, document.getElementById('schoolsCount'), schools, {
+    const schoolsState = createGroupState({
+      listEl: schoolCardsEl,
+      countEl: document.getElementById('schoolsCount'),
+      statusEl: document.getElementById('schoolsLoadStatus'),
+      loadAllBtn: document.getElementById('schoolsLoadAllBtn'),
+      detailsEl: document.getElementById('schoolsGroup'),
+      features: schools,
       nameField: NAME_FIELD_RESTAURANT,
-      kind: 'school'
+      kind: 'school',
+      label: 'schools'
     });
-    renderGroup(mobileCardsEl, document.getElementById('mobileCount'), mobileTrucks, {
+    const mobileState = createGroupState({
+      listEl: mobileCardsEl,
+      countEl: document.getElementById('mobileCount'),
+      statusEl: document.getElementById('mobileLoadStatus'),
+      loadAllBtn: document.getElementById('mobileLoadAllBtn'),
+      detailsEl: document.getElementById('mobileGroup'),
+      features: mobileTrucks,
       nameField: NAME_FIELD_MOBILE,
-      kind: 'mobile'
+      kind: 'mobile',
+      label: 'mobile food trucks'
+    });
+    const groupStates = [restaurantsState, schoolsState, mobileState];
+
+    // Restaurants' <details> starts open, so build its first page right away.
+    // Schools/Mobile start collapsed — build their first page only once a user
+    // actually opens them, so that work isn't spent on sections nobody looks at.
+    ensureBuilt(restaurantsState);
+    [schoolsState, mobileState].forEach((state) => {
+      state.detailsEl.addEventListener('toggle', () => {
+        if (state.detailsEl.open) ensureBuilt(state);
+      });
     });
 
     const total = restaurants.length + schools.length + mobileTrucks.length;
@@ -242,9 +316,48 @@ function applyFilters({ nameQuery, ratingState }) {
     }
 
     function refresh() {
-      const visibleTotal = applyFilters({ nameQuery: nameFilterEl.value, ratingState: getRatingState() });
-      statusEl.textContent = `${visibleTotal} of ${total} facilities shown.`;
+      const nameQuery = nameFilterEl.value;
+      const ratingState = getRatingState();
+      const filtersActive = nameQuery.trim() !== '' || Object.values(ratingState).some((on) => !on);
+
+      if (filtersActive) {
+        // Filtering only ever shows/hides cards already in the DOM (see applyFilters
+        // above), so an active filter has to force every group fully loaded and
+        // expanded first — otherwise a match sitting past the initial page, or inside
+        // a still-collapsed section, would silently be missed instead of just not yet
+        // visible.
+        groupStates.forEach((state) => {
+          ensureFullyLoaded(state);
+          if (!state.detailsEl.open) state.detailsEl.open = true;
+        });
+        const visibleTotal = applyFilters({ nameQuery, ratingState });
+        statusEl.textContent = `${visibleTotal} of ${total} facilities shown.`;
+      } else {
+        // Nothing to filter — every card should be visible and each heading count
+        // should read its group's true total. Reset explicitly instead of running
+        // applyFilters, which would scan (and wrongly zero out the count of) any
+        // group that's still collapsed and hasn't rendered any cards yet.
+        document.querySelectorAll('.facility-card-item').forEach((li) => {
+          li.hidden = false;
+        });
+        groupStates.forEach((state) => {
+          state.countEl.textContent = `(${state.features.length})`;
+        });
+        statusEl.textContent = `${total} of ${total} facilities shown.`;
+      }
     }
+
+    groupStates.forEach((state) => {
+      state.loadAllBtn.addEventListener('click', () => {
+        ensureFullyLoaded(state);
+        refresh();
+        // The button that was just focused is now hidden (everything's loaded), which
+        // would otherwise silently drop keyboard focus to <body>. Move it to the status
+        // message instead, so a keyboard user's next Tab continues from the same spot
+        // rather than restarting from the top of the page.
+        state.statusEl.focus();
+      });
+    });
 
     document.querySelectorAll('.rating-check').forEach((el) => {
       el.addEventListener('change', refresh);

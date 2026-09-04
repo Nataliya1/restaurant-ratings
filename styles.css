@@ -159,6 +159,100 @@ body {
   outline-color: #fff;
 }
 
+/* Google's translate widget is a real, native <select> (select.goog-te-combo,
+   injected async — see js/translate-init.js) sitting invisibly on top of a
+   .lang-select-visual badge that looks like the other header icons: a circle with
+   a 2-letter language code, kept in sync with the select's value. The select
+   itself stays fully interactive (and keyboard/screen-reader accessible on its
+   own merits as a native form control) — only its default appearance is hidden,
+   never its function. Same overlay technique as a custom-styled file input. */
+.lang-select-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+}
+
+.lang-select-visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border-radius: 4px;
+  /* Lets clicks pass through to the real (invisible) <select> beneath it. */
+  pointer-events: none;
+}
+
+.lang-select-visual svg {
+  width: 22px;
+  height: 22px;
+}
+
+.lang-select-wrap:hover .lang-select-visual {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* :focus-within (rather than :focus-visible on the select itself) is what lets a
+   focus ring drawn on this ancestor react to focus landing several levels down,
+   inside Google's own gadget markup between .lang-select and the actual <select>. */
+.lang-select-wrap:focus-within .lang-select-visual {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.lang-select {
+  position: absolute;
+  inset: 0;
+}
+
+.lang-select .goog-te-gadget,
+.lang-select .goog-te-gadget > div {
+  height: 100%;
+}
+
+/* The "Powered by Google Translate" text is a bare text node next to the hidden
+   <a> below, not wrapped in an element display: none can target — font-size: 0
+   is the only way to collapse it. The select's own dimensions are set in pixels
+   below, so this doesn't affect it. */
+.lang-select .goog-te-gadget {
+  font-size: 0;
+}
+
+.lang-select select.goog-te-combo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Everything else the gadget renders alongside the <select> — its own icon and the
+   "Powered by Google Translate" link/logo, nested inside a <span> rather than a
+   direct child — is redundant with our badge and hidden. */
+.lang-select .goog-te-gadget a,
+.lang-select .goog-te-gadget img {
+  display: none !important;
+}
+
+/* Google shows its own translation banner across the top of the page and pushes
+   <body> down with an inline `position: relative; top: 40px` to make room for it.
+   We already have our own always-visible language control, so hide that banner —
+   and, since hiding it doesn't undo the inline offset, override that too. */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body {
+  position: static !important;
+  top: 0 !important;
+}
+
 .app-header-text {
   display: flex;
   flex-direction: column;
@@ -195,30 +289,11 @@ body {
   border-bottom: 1px solid var(--color-border-warm);
 }
 
-.list-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.5rem 1.25rem;
-}
-
-.list-control {
-  display: flex;
+.see-list-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-.ribbon-toggle {
-  white-space: nowrap;
-}
-
-.dropdown {
-  position: relative;
-}
-
-.dropdown-btn {
-  display: flex;
-  align-items: center;
+  justify-content: center;
+  align-self: center;
   gap: 0.4rem;
   min-height: 40px;
   padding: 0.4rem 0.75rem;
@@ -230,26 +305,17 @@ body {
   font-weight: 600;
   letter-spacing: 0.02em;
   color: #111827;
-  cursor: pointer;
+  text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
 }
 
-.dropdown-btn:hover {
+.see-list-btn:hover {
   background: var(--color-accent-soft);
 }
 
-.dropdown-caret {
-  width: 0;
-  height: 0;
-  flex: 0 0 auto;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 5px solid #4b5563;
-  transition: transform 0.15s ease;
-}
-
-.dropdown-btn[aria-expanded="true"] .dropdown-caret {
-  transform: rotate(180deg);
+.dropdown {
+  position: relative;
 }
 
 .dropdown-panel {
@@ -266,11 +332,6 @@ body {
   border-radius: 6px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
   padding: 0.75rem;
-}
-
-.dropdown-panel--right {
-  left: auto;
-  right: 0;
 }
 
 .header-dropdown-panel {
@@ -301,6 +362,32 @@ body {
 
 .dropdown-link:hover {
   background: var(--color-accent-soft);
+}
+
+.accessibility-panel {
+  width: 300px;
+}
+
+.accessibility-panel h3 {
+  margin: 0 0 0.4rem;
+  padding: 0 0.15rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.accessibility-panel p {
+  margin: 0;
+  padding: 0 0.15rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.accessibility-panel p a {
+  color: var(--color-accent);
+  font-weight: 600;
 }
 
 .download-csv-btn {
@@ -373,7 +460,7 @@ body {
 }
 
 .about-dialog {
-  width: min(560px, calc(100vw - 2rem));
+  width: min(640px, calc(100vw - 2rem));
   max-height: calc(100vh - 2rem);
   margin: auto;
   padding: 0;
@@ -446,6 +533,27 @@ body {
 }
 
 .about-dialog-body p:last-child {
+  margin-bottom: 0;
+}
+
+.about-dialog-body h3 {
+  margin: 1rem 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.about-dialog-tools {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.about-dialog-tools li {
+  margin-bottom: 0.5rem;
+}
+
+.about-dialog-tools li:last-child {
   margin-bottom: 0;
 }
 
@@ -528,12 +636,6 @@ body {
   flex: 0 0 auto;
 }
 
-.hint {
-  font-size: 0.85rem;
-  color: #4b5563;
-  margin: 0 0 0.5rem;
-}
-
 .rating-legend {
   border: none;
   padding: 0;
@@ -602,54 +704,6 @@ body {
   margin: 0 0 0.35rem;
 }
 
-.facility-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  max-height: 260px;
-  overflow-y: auto;
-  border: 1px solid var(--color-border-warm);
-  border-radius: 4px;
-}
-
-.facility-list li {
-  border-bottom: 1px solid var(--color-border-warm);
-}
-
-.facility-list li:last-child {
-  border-bottom: none;
-}
-
-.facility-list li.empty {
-  padding: 0.5rem;
-  color: #6b7280;
-  font-size: 0.85rem;
-}
-
-.facility-item {
-  display: block;
-  width: 100%;
-  min-height: 44px;
-  text-align: left;
-  background: none;
-  border: none;
-  padding: 0.65rem 0.5rem;
-  font-size: 0.85rem;
-  line-height: 1.3;
-  color: #111827;
-  cursor: pointer;
-}
-
-.facility-item:hover {
-  background: var(--color-accent-soft);
-}
-
-.facility-detail {
-  padding: 0 0.5rem 0.5rem 1.25rem;
-  font-size: 0.8rem;
-  color: #374151;
-}
-
 @media (max-width: 720px) {
   .app-body {
     flex-direction: column;
@@ -711,6 +765,16 @@ body {
     display: inline;
     font-size: 0.9rem;
   }
+
+  .lang-select-wrap {
+    width: 100%;
+  }
+
+  .lang-select-visual {
+    justify-content: flex-start;
+    gap: 0.6rem;
+    padding: 0 0.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -745,9 +809,8 @@ body {
 /* Larger touch targets on devices without a precise pointer (phones/tablets),
    regardless of viewport width (e.g. a tablet in landscape). */
 @media (pointer: coarse) {
-  .dropdown-btn,
-  .map-toggle,
-  .facility-item {
+  .see-list-btn,
+  .map-toggle {
     min-height: 48px;
   }
 
@@ -843,7 +906,7 @@ body {
 }
 
 /* Hide the browser's default disclosure marker so the custom .faq-caret
-   (matching .dropdown-caret elsewhere on the site) can take its place. */
+   can take its place. */
 .faq-item > summary::-webkit-details-marker {
   display: none;
 }
@@ -1218,6 +1281,32 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 0.85rem;
+}
+
+.load-more-status {
+  margin: 0.75rem 0 0;
+}
+
+/* :not([hidden]) matters here — a plain `display: block` beats the browser's
+   [hidden] rule (author styles win over user-agent styles on the same property
+   regardless of specificity), so toggling .hidden via JS wouldn't visually hide
+   this button without it. Same fix as .header-dropdown-panel and .facility-card-item. */
+.load-all-btn:not([hidden]) {
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  margin-top: 0.5rem;
+  background: var(--color-panel);
+  border: 1px solid var(--color-accent);
+  border-radius: 4px;
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.load-all-btn:hover {
+  background: var(--color-accent-soft);
 }
 
 /* :not([hidden]) matters here — a plain `display: flex` beats the browser's

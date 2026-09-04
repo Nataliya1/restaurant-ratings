@@ -18,6 +18,95 @@
         <h1>Restaurant Inspection Ratings</h1>
         <p class="app-subtitle">Douglas County Health Department</p>
       </div>
+
+      <div class="mobile-menu">
+        <button type="button" class="header-action hamburger-btn" id="menuToggle" aria-expanded="false" aria-controls="headerActionsMenu" aria-label="Open menu" title="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+          </svg>
+        </button>
+
+        <nav class="header-actions" id="headerActionsMenu" aria-label="Help and contact links">
+        <button type="button" class="header-action" id="infoToggle" aria-haspopup="dialog" aria-label="About this site" title="About this site">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <line x1="12" y1="11" x2="12" y2="16" />
+            <circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="header-action-label">About</span>
+        </button>
+        <a class="header-action" href="./ratings-explained.html" aria-label="How ratings are assigned" title="How ratings are assigned">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <text x="12" y="12.5" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="700" fill="currentColor" stroke="none" font-family="Georgia, 'Times New Roman', serif">A</text>
+          </svg>
+          <span class="header-action-label">How ratings are assigned</span>
+        </a>
+        <a class="header-action" href="./faq.html" aria-label="Frequently asked questions (FAQ)" title="Frequently asked questions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1.3 1-1.3 1.9v.3" />
+            <circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="header-action-label">FAQ</span>
+        </a>
+        <div class="dropdown">
+          <button type="button" class="header-action" id="contactToggle" aria-expanded="false" aria-controls="contactPanel" aria-label="Contact us" title="Contact us">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 7l9 6 9-6" />
+            </svg>
+            <span class="header-action-label">Contact us</span>
+          </button>
+          <div id="contactPanel" class="dropdown-panel header-dropdown-panel" hidden>
+            <a class="dropdown-link" href="https://survey123.arcgis.com/share/acf54b3b7de64b87a4ec5996ba80c833?hide=field:source_website" target="_blank" rel="noopener noreferrer">
+              Technical / Map Questions
+              <span class="visually-hidden"> (opens in a new tab)</span>
+            </a>
+            <a class="dropdown-link" href="https://www.douglascountyhealth.com/component/contact/contact/25-russ-hadan?catid=81&Itemid=186" target="_blank" rel="noopener noreferrer">
+              Inspection / Rating Questions
+              <span class="visually-hidden"> (opens in a new tab)</span>
+            </a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button type="button" class="header-action" id="accessibilityToggle" aria-expanded="false" aria-controls="accessibilityPanel" aria-label="Accessibility statement" title="Accessibility statement">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="7.4" r="1.3" fill="currentColor" stroke="none" />
+              <path d="M8 10.6h8" />
+              <path d="M12 10.6v4" />
+              <path d="M12 14.6l-2.6 3" />
+              <path d="M12 14.6l2.6 3" />
+            </svg>
+            <span class="header-action-label">Accessibility statement</span>
+          </button>
+          <div id="accessibilityPanel" class="dropdown-panel header-dropdown-panel accessibility-panel" aria-labelledby="accessibilityPanelHeading" hidden>
+            <h3 id="accessibilityPanelHeading">Accessibility Statement</h3>
+            <p>
+              We are committed to ensuring our public-facing maps and applications meet applicable accessibility
+              standards to the greatest extent possible. If you experience difficulty accessing or navigating any
+              of our GIS content and require information in an accessible format, please contact us directly. You
+              may reach our GIS team by phone at <a href="tel:+14024444309">(402) 444-4309</a> or by email at
+              <a href="mailto:gis@douglascounty-ne.gov">gis@douglascounty-ne.gov</a>. We will make every effort to
+              provide the information you need in a format that meets your accessibility requirements.
+            </p>
+          </div>
+        </div>
+        <div class="lang-select-wrap">
+          <div class="lang-select-visual" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+              <circle cx="12" cy="12" r="9" />
+              <text id="langSelectCode" x="12" y="12.5" text-anchor="middle" dominant-baseline="central" font-size="7.5" font-weight="700" fill="currentColor" stroke="none" font-family="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">EN</text>
+            </svg>
+            <span class="header-action-label">Language</span>
+          </div>
+          <div id="google_translate_element" class="lang-select" role="group" aria-label="Language"></div>
+        </div>
+        </nav>
+      </div>
     </header>
 
     <nav class="back-nav" aria-label="Page">
@@ -80,31 +169,37 @@
 
       <p class="list-status" id="facilityListStatus" aria-live="polite">Loading facilities&hellip;</p>
 
-      <details class="facility-group" open>
+      <details class="facility-group" open id="restaurantsGroup">
         <summary>
           <h3 id="restaurantsGroupHeading">Restaurants <span class="facility-group-count" id="restaurantsCount"></span></h3>
           <span class="facility-group-caret" aria-hidden="true"></span>
         </summary>
         <button type="button" class="download-csv-btn facility-group-csv-btn" id="restaurantsCsvBtn">Download CSV</button>
         <ul class="facility-cards" id="restaurantCards"></ul>
+        <p class="list-status load-more-status" id="restaurantsLoadStatus" aria-live="polite" tabindex="-1"></p>
+        <button type="button" class="load-all-btn" id="restaurantsLoadAllBtn" hidden>Show all restaurants</button>
       </details>
 
-      <details class="facility-group" open>
+      <details class="facility-group" id="schoolsGroup">
         <summary>
           <h3 id="schoolsGroupHeading">Schools <span class="facility-group-count" id="schoolsCount"></span></h3>
           <span class="facility-group-caret" aria-hidden="true"></span>
         </summary>
         <button type="button" class="download-csv-btn facility-group-csv-btn" id="schoolsCsvBtn">Download CSV</button>
         <ul class="facility-cards" id="schoolCards"></ul>
+        <p class="list-status load-more-status" id="schoolsLoadStatus" aria-live="polite" tabindex="-1"></p>
+        <button type="button" class="load-all-btn" id="schoolsLoadAllBtn" hidden>Show all schools</button>
       </details>
 
-      <details class="facility-group" open>
+      <details class="facility-group" id="mobileGroup">
         <summary>
           <h3 id="mobileGroupHeading">Mobile Food Trucks <span class="facility-group-count" id="mobileCount"></span></h3>
           <span class="facility-group-caret" aria-hidden="true"></span>
         </summary>
         <button type="button" class="download-csv-btn facility-group-csv-btn" id="mobileCsvBtn">Download CSV</button>
         <ul class="facility-cards" id="mobileCards"></ul>
+        <p class="list-status load-more-status" id="mobileLoadStatus" aria-live="polite" tabindex="-1"></p>
+        <button type="button" class="load-all-btn" id="mobileLoadAllBtn" hidden>Show all mobile food trucks</button>
       </details>
     </main>
 
@@ -121,6 +216,64 @@
       <span class="footer-text">Powered by Douglas County GIS</span>
     </footer>
 
+    <dialog id="aboutDialog" class="about-dialog" aria-labelledby="aboutDialogHeading">
+      <form method="dialog" class="about-dialog-form">
+        <div class="about-dialog-header">
+          <h2 id="aboutDialogHeading">About this site</h2>
+          <button type="submit" value="close" class="about-dialog-close-btn" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <line x1="5" y1="5" x2="19" y2="19" />
+              <line x1="19" y1="5" x2="5" y2="19" />
+            </svg>
+          </button>
+        </div>
+        <div class="about-dialog-body" tabindex="0">
+          <p>
+            This site shows current health inspection ratings for restaurants, schools, and mobile food trucks in
+            Douglas County, Nebraska. Ratings and inspection details come from the Douglas County Health
+            Department's food establishment inspection program.
+          </p>
+
+          <h3>Getting around this site</h3>
+          <ul class="about-dialog-tools">
+            <li>
+              <strong>Interactive map</strong> &mdash; search by facility name or address, choose which facility
+              types are shown, and select any point for its rating and inspection details.
+            </li>
+            <li>
+              <strong>See List</strong> (this page) &mdash; a full, searchable list of every restaurant, school,
+              and mobile food truck, grouped by type, each with a Download CSV option. Mobile food trucks don't
+              have a fixed location, so they're listed here rather than mapped.
+            </li>
+            <li>
+              <strong>Filter by rating</strong> &mdash; check or uncheck A, B, C, D, F, or Not rated / other to
+              narrow results, on both the map and the facility list.
+            </li>
+            <li>
+              <strong>How ratings are assigned</strong> and <strong>FAQ</strong> &mdash; background on the
+              inspection program and answers to common questions.
+            </li>
+            <li>
+              <strong>Language</strong> icon (in the header) &mdash; translate this site into one of 30 languages.
+            </li>
+            <li>
+              <strong>Contact us</strong> and <strong>Accessibility statement</strong> icons (also in the header)
+              &mdash; for questions or accessibility needs.
+            </li>
+          </ul>
+        </div>
+        <div class="about-dialog-footer">
+          <label class="about-dialog-checkbox">
+            <input type="checkbox" id="hideAboutCheckbox" />
+            Don't show this message automatically next time
+          </label>
+          <button type="submit" value="continue" class="about-dialog-continue-btn">Continue</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./js/translate-init.js"></script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script type="module" src="./js/facility-list.js"></script>
   </body>
 </html>

@@ -138,27 +138,3 @@ export async function queryLatestObjectIds(layer) {
   });
   return { oidField, ids: dedupeToLatestPerFirm(features).map((f) => f.attributes[oidField]) };
 }
-
-/** Fetches every restaurant or school place (ignores name/rating filters) for CSV export, most recent inspection only. */
-export async function queryAllFacilities(layer, { isSchool }) {
-  const categoryClause = isSchool
-    ? `UPPER(facility_types_primary) LIKE '%${SCHOOL_TOKEN}%'`
-    : `UPPER(facility_types_primary) NOT LIKE '%${SCHOOL_TOKEN}%'`;
-
-  const features = await queryAllPages(layer, {
-    where: categoryClause,
-    outFields: RESTAURANT_FIELDS,
-    orderByFields: [`${NAME_FIELD_RESTAURANT} ASC`]
-  });
-  return dedupeToLatestPerFirm(features);
-}
-
-/** Fetches every mobile food truck place (ignores the name filter) for CSV export, most recent inspection only. */
-export async function queryAllMobile(table) {
-  const features = await queryAllPages(table, {
-    where: '1=1',
-    outFields: MOBILE_FIELDS,
-    orderByFields: [`${NAME_FIELD_MOBILE} ASC`]
-  });
-  return dedupeToLatestPerFirm(features);
-}
