@@ -31,4 +31,4 @@ export const CUSTOM_GEOCODER_NAME = 'Douglas County Geocoder';
 // Map scale (1:N) to zoom to when centering on a single facility — selecting a
 // search result (js/search.js) and clicking a facility card's "Zoom to" button
 // (js/facility-details.js) both use this, so either path lands at the same zoom.
-export const FACILITY_ZOOM_SCALE = 2000;
+export const FACILITY_ZOOM_SCALE = 5000;
