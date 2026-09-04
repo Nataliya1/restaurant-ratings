@@ -85,14 +85,35 @@ view.when(
     // goes unused, though: Features shows one selected feature at a time with
     // next/previous paging (confirmed by reading its source — there's no built-in
     // "list every selected feature at once" mode), which both looks like a popup
-    // still embedded in the panel and hides facilities beyond the first. It's
-    // given a container that's never attached to the page — just enough to
-    // satisfy the widget, nothing to show — and js/facility-details.js renders
-    // every one of view.popup.features into the actual visible Facility Details
-    // tab itself. view.popup isn't fully initialized (watch() isn't callable on
-    // the default one yet) until view.when() resolves, so this has to happen here
-    // rather than right after `new MapView(...)`.
-    view.popup = new Features({ view, container: document.createElement('div') });
+    // still embedded in the panel and hides facilities beyond the first. So
+    // js/facility-details.js renders every one of view.popup.features into the
+    // actual visible Facility Details tab itself, and this widget's own container
+    // (popupHost below) is never shown to anyone.
+    //
+    // popupHost still has to be a real, attached DOM node, though — a detached
+    // `document.createElement('div')` that's never inserted into the page was
+    // tried first and broke click-to-select entirely (confirmed live: nothing
+    // happened on a map click), so the widget genuinely needs to be mounted in
+    // the document to do its selection/hit-testing work, even though nothing it
+    // renders is ever supposed to be seen. `inert` drops it from both the tab
+    // order and the accessibility tree; the 1x1px/overflow:hidden sizing keeps it
+    // off-screen without `display: none`, in case that also interferes with its
+    // internal rendering the way full detachment did.
+    const popupHost = document.createElement('div');
+    popupHost.inert = true;
+    Object.assign(popupHost.style, {
+      position: 'absolute',
+      left: '-9999px',
+      width: '1px',
+      height: '1px',
+      overflow: 'hidden'
+    });
+    document.body.appendChild(popupHost);
+
+    // view.popup isn't fully initialized (watch() isn't callable on the default
+    // one yet) until view.when() resolves, so this has to happen here rather than
+    // right after `new MapView(...)`.
+    view.popup = new Features({ view, container: popupHost });
 
     const facilityDetails = renderFacilityDetails({
       view,
