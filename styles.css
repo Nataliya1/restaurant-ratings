@@ -368,7 +368,7 @@ body {
   width: 300px;
 }
 
-.accessibility-panel h3 {
+.accessibility-panel h2 {
   margin: 0 0 0.4rem;
   padding: 0 0.15rem;
   font-family: var(--font-display);
@@ -505,14 +505,14 @@ body {
   display: none;
 }
 
-.info-tabpanel h3 {
+.info-tabpanel h2 {
   margin: 1rem 0 0.4rem;
   font-family: var(--font-display);
   font-size: 0.95rem;
   color: #111827;
 }
 
-.info-tabpanel h3:first-child {
+.info-tabpanel h2:first-child {
   margin-top: 0;
 }
 
@@ -585,6 +585,45 @@ body {
 
 .facility-feature-zoom-btn:hover {
   text-decoration: underline;
+}
+
+.facility-nearby-list {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.facility-nearby-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  background: var(--color-paper);
+  border: 1px solid var(--color-border-warm);
+  border-radius: 6px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.facility-nearby-item:hover {
+  background: var(--color-accent-soft);
+}
+
+.facility-nearby-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.facility-nearby-meta {
+  font-size: 0.78rem;
+  color: #4a4a4a;
 }
 
 .app-footer {
