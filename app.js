@@ -7,7 +7,7 @@ import Home from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Home.js';
 import Locate from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Locate.js';
 import Features from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Features.js';
 
-import { WEBMAP_ITEM_ID, RESTAURANT_LAYER_TITLE, NAME_FIELD_RESTAURANT } from './js/config.js';
+import { WEBMAP_ITEM_ID, RESTAURANT_LAYER_TITLE, NAME_FIELD_RESTAURANT, NEARBY_SEARCH_RADIUS_MILES } from './js/config.js';
 import { buildRestaurantDefinitionExpression } from './js/filters.js';
 import { queryLatestObjectIds } from './js/lists.js';
 import { createSearchWidget } from './js/search.js';
@@ -160,23 +160,66 @@ view.when(
 
     await restaurantLayer.load();
 
-    createSearchWidget({ view, restaurantLayer });
+    // The map should show one point per place (its most recent inspection only),
+    // not one per historical inspection row — AGOL's Map Viewer can't express that
+    // "latest per group" filter itself, so it's computed here instead. Queried once
+    // and shared: the map applies it as a LayerView filter below, and the search
+    // widget applies the same OID list to its facility-name source so its
+    // suggestion dropdown doesn't list a separate entry per historical inspection
+    // either (confirmed live: without this, searching a facility with a long
+    // inspection history shows one nearly-identical suggestion per past inspection
+    // date). Applied as a LayerView filter (client-side, draw-only) rather than
+    // folded into definitionExpression below: definitionExpression restricts the
+    // layer's own queryable dataset, and the webmap's popup reads its multi-row
+    // inspection history from that same dataset — narrowing it would leave only
+    // the one visible row for every popup. A LayerView filter only hides the older
+    // points from view; the full history stays queryable for the popup.
+    const latestIdsPromise = queryLatestObjectIds(restaurantLayer);
+
+    // Clears out whatever facility a *previous* search or click had selected
+    // (view.popup.close(), rather than leaving it stuck on screen showing a
+    // place that has nothing to do with the new search) and swaps in
+    // `render()`'s content instead of the usual feature cards. Deferred a
+    // tick: close() triggers this file's own features/visible watches
+    // (above), which re-render facilityFeaturesContainer and un-hide the
+    // default "Search for a facility..." placeholder — asynchronously, so
+    // running this in the same tick raced them and lost (confirmed live:
+    // both ended up stacked on screen). A tick lets those settle first so
+    // this genuinely runs last.
+    function clearSelectionThenRender(render) {
+      view.popup.close();
+      setTimeout(() => {
+        document.getElementById('facilityDetailsEmpty')?.setAttribute('hidden', '');
+        render();
+        infoPanel.showDetailsTab();
+      }, 0);
+    }
+
+    createSearchWidget({
+      view,
+      restaurantLayer,
+      latestIdsPromise,
+      // An address search found nothing within a mile of it either — rare,
+      // but still possible toward the county's edges.
+      onNoFacilityFound: () => clearSelectionThenRender(() =>
+        facilityDetails.renderMessage(`No food facility was found within ${NEARBY_SEARCH_RADIUS_MILES} mile of this address.`)
+      ),
+      // An address search found no facility at that exact address, but did
+      // find some nearby — listed as real, selectable choices (a "look at
+      // the map" instruction alone isn't usable for a screen-reader or
+      // low-vision user, raised directly in conversation) rather than
+      // requiring the map itself to find them.
+      onNearbyFacilities: (entries, selectFacility) => clearSelectionThenRender(() =>
+        facilityDetails.renderNearbyList(entries, { onSelect: selectFacility })
+      )
+    });
 
     function applyMapFilter() {
       restaurantLayer.definitionExpression = buildRestaurantDefinitionExpression(filterState);
     }
     applyMapFilter();
 
-    // The map should show one point per place (its most recent inspection only),
-    // not one per historical inspection row — AGOL's Map Viewer can't express that
-    // "latest per group" filter itself, so it's computed here instead. This is
-    // applied as a LayerView filter (client-side, draw-only) rather than folded
-    // into definitionExpression above: definitionExpression restricts the layer's
-    // own queryable dataset, and the webmap's popup reads its multi-row inspection
-    // history from that same dataset — narrowing it would leave only the one
-    // visible row for every popup. A LayerView filter only hides the older points
-    // from view; the full history stays queryable for the popup.
-    queryLatestObjectIds(restaurantLayer).then(async ({ oidField, ids }) => {
+    latestIdsPromise.then(async ({ oidField, ids }) => {
       if (!ids.length) return;
       const layerView = await view.whenLayerView(restaurantLayer);
       layerView.filter = { where: `${oidField} IN (${ids.join(',')})` };

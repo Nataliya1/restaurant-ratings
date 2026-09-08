@@ -32,3 +32,11 @@ export const CUSTOM_GEOCODER_NAME = 'Douglas County Geocoder';
 // search result (js/search.js) and clicking a facility card's "Zoom to" button
 // (js/facility-details.js) both use this, so either path lands at the same zoom.
 export const FACILITY_ZOOM_SCALE = 5000;
+
+// How far js/search.js looks for nearby facilities when an address search
+// doesn't land exactly on one — wide enough to almost always find
+// *something* even in lower-density parts of the county, without pulling in
+// places from a genuinely different neighborhood. app.js's own "nothing
+// found" message names this same distance, so the two stay in sync.
+export const NEARBY_SEARCH_RADIUS_MILES = 1;
+export const NEARBY_RESULT_LIMIT = 10;
