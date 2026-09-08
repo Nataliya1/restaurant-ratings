@@ -1,6 +1,7 @@
 import WebMap from 'https://js.arcgis.com/4.31/@arcgis/core/WebMap.js';
 import MapView from 'https://js.arcgis.com/4.31/@arcgis/core/views/MapView.js';
 import * as reactiveUtils from 'https://js.arcgis.com/4.31/@arcgis/core/core/reactiveUtils.js';
+import Basemap from 'https://js.arcgis.com/4.31/@arcgis/core/Basemap.js';
 import BasemapGallery from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/BasemapGallery.js';
 import Expand from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Expand.js';
 import Home from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Home.js';
@@ -33,17 +34,20 @@ const view = new MapView({
 });
 
 const homeWidget = new Home({ view });
+view.ui.add(homeWidget, 'top-right');
 
-const basemapGallery = new BasemapGallery({ view });
-const basemapExpand = new Expand({
-  view,
-  content: basemapGallery,
-  expandIcon: 'basemap',
-  expandTooltip: 'Basemap gallery',
-  collapseTooltip: 'Basemap gallery'
-});
-
-view.ui.add([homeWidget, basemapExpand], 'top-right');
+// Basemap portal items pulled from the county's own default basemap gallery
+// group (dogis.maps.arcgis.com, group ab72ca4702a24b9c86a45a0b80e7dca8),
+// confirmed live via that group's item listing — "Enhanced Contrast Map" /
+// "Enhanced Contrast Dark Map" are Esri's actual titles for what's commonly
+// called "High Contrast Light/Dark". Built after webmap.load() (see below)
+// so `webmap.basemap` — the map's own current basemap, kept as the gallery's
+// first/default entry — is actually populated instead of undefined.
+const EXTRA_BASEMAP_ITEM_IDS = {
+  imageryHybrid: '86265e5a4bbb4187a59719cf134e0018',
+  highContrastLight: '084291b0ecad4588b8c8853898d72445',
+  highContrastDark: '3e23478909194c54992eaaee78b5f754'
+};
 
 // Replaces the default 'compass' (reset map orientation) component, in the same
 // top-left slot below the zoom control. Requires a secure context (HTTPS or
@@ -151,6 +155,25 @@ view.when(
     container.querySelector('.esri-attribution')?.classList.add('notranslate');
 
     await webmap.load();
+
+    const basemapGallery = new BasemapGallery({
+      view,
+      source: [
+        webmap.basemap,
+        new Basemap({ portalItem: { id: EXTRA_BASEMAP_ITEM_IDS.imageryHybrid } }),
+        new Basemap({ portalItem: { id: EXTRA_BASEMAP_ITEM_IDS.highContrastLight } }),
+        new Basemap({ portalItem: { id: EXTRA_BASEMAP_ITEM_IDS.highContrastDark } })
+      ]
+    });
+    const basemapExpand = new Expand({
+      view,
+      content: basemapGallery,
+      expandIcon: 'basemap',
+      expandTooltip: 'Basemap gallery',
+      collapseTooltip: 'Basemap gallery'
+    });
+    view.ui.add(basemapExpand, 'top-right');
+
     const restaurantLayer = webmap.allLayers.find((l) => l.title === RESTAURANT_LAYER_TITLE);
 
     if (!restaurantLayer) {
