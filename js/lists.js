@@ -10,9 +10,9 @@ const RESTAURANT_FIELDS = [
   'firm_number',
   'inspection_id',
   'inspection_date',
+  'inspection_frequency',
   // Not used by the list/CSV UI, but referenced by the webmap layer's own popup
   // template — needed so clicking a list item opens a fully-populated popup.
-  'inspection_frequency',
   'downloadDetailsUrl'
 ];
 const MOBILE_FIELDS = [
@@ -24,7 +24,8 @@ const MOBILE_FIELDS = [
   'permit_number',
   'firm_number',
   'inspection_id',
-  'inspection_date'
+  'inspection_date',
+  'inspection_frequency'
 ];
 
 function escapeForSql(value) {

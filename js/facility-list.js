@@ -285,15 +285,16 @@ function applyFilters({ nameQuery, ratingState }) {
       { label: 'Address', value: (a) => a.est_address },
       { label: 'City', value: (a) => a.est_city },
       { label: 'Rating', value: (a) => a.rating },
-      { label: 'Inspection Date', value: formatInspectionDate }
+      { label: 'Inspection Date', value: formatInspectionDate },
+      { label: 'Inspection Frequency', value: (a) => a.inspection_frequency }
     ];
     const mobileCsvColumns = [
       { label: 'Name', value: (a) => a[NAME_FIELD_MOBILE] },
       { label: 'Address', value: (a) => a.est_address },
       { label: 'City', value: (a) => a.est_city },
       { label: 'Rating', value: (a) => a.rating },
-      { label: 'Permit #', value: (a) => a.permit_number },
-      { label: 'Inspection Date', value: formatInspectionDate }
+      { label: 'Inspection Date', value: formatInspectionDate },
+      { label: 'Inspection Frequency', value: (a) => a.inspection_frequency }
     ];
 
     document.getElementById('restaurantsCsvBtn').addEventListener('click', () => {
