@@ -269,7 +269,16 @@ function applyFilters({ nameQuery, ratingState }) {
     ensureBuilt(restaurantsState);
     [schoolsState, mobileState].forEach((state) => {
       state.detailsEl.addEventListener('toggle', () => {
-        if (state.detailsEl.open) ensureBuilt(state);
+        if (state.detailsEl.open) {
+          ensureBuilt(state);
+          // Reapplies whatever filter (rating and/or name) is already active
+          // to the cards just built — matters when that filter came from
+          // restoring a synced state from the map page (see
+          // syncRatingCheckboxesWithStorage below) before this section was
+          // ever opened, since that restore deliberately doesn't force
+          // every section open/loaded the way a live filter change does.
+          refresh({ forceExpand: false });
+        }
       });
     });
 
@@ -316,21 +325,32 @@ function applyFilters({ nameQuery, ratingState }) {
       return state;
     }
 
-    function refresh() {
+    // forceExpand controls whether an active filter eagerly fully-loads and
+    // expands every group (the original behavior, still used for a live
+    // toggle/name-search right on this page) or just filters whatever's
+    // already rendered (used when restoring a filter synced from the map
+    // page on initial load — see syncRatingCheckboxesWithStorage below —
+    // so that doesn't itself disturb the "restaurants capped at 15,
+    // schools/mobile collapsed" defaults). The toggle listeners above call
+    // this again, without forcing, once a section is actually opened, so a
+    // restored filter still reaches it eventually rather than never.
+    function refresh({ forceExpand = true } = {}) {
       const nameQuery = nameFilterEl.value;
       const ratingState = getRatingState();
       const filtersActive = nameQuery.trim() !== '' || Object.values(ratingState).some((on) => !on);
 
       if (filtersActive) {
-        // Filtering only ever shows/hides cards already in the DOM (see applyFilters
-        // above), so an active filter has to force every group fully loaded and
-        // expanded first — otherwise a match sitting past the initial page, or inside
-        // a still-collapsed section, would silently be missed instead of just not yet
-        // visible.
-        groupStates.forEach((state) => {
-          ensureFullyLoaded(state);
-          if (!state.detailsEl.open) state.detailsEl.open = true;
-        });
+        if (forceExpand) {
+          // Filtering only ever shows/hides cards already in the DOM (see
+          // applyFilters above), so an active filter has to force every
+          // group fully loaded and expanded first — otherwise a match
+          // sitting past the initial page, or inside a still-collapsed
+          // section, would silently be missed instead of just not yet visible.
+          groupStates.forEach((state) => {
+            ensureFullyLoaded(state);
+            if (!state.detailsEl.open) state.detailsEl.open = true;
+          });
+        }
         const visibleTotal = applyFilters({ nameQuery, ratingState });
         statusEl.textContent = `${visibleTotal} of ${total} facilities shown.`;
       } else {
@@ -367,9 +387,11 @@ function applyFilters({ nameQuery, ratingState }) {
 
     // Restore whatever rating filter was last set here or on the map page
     // (separate page loads, so sessionStorage is the only way the two stay in
-    // sync), then reapply filtering/expansion immediately if that restored a
-    // non-default selection.
-    syncRatingCheckboxesWithStorage(() => refresh());
+    // sync). forceExpand: false — this is a page-load restore, not something
+    // the user just did on this page, so it shouldn't itself blow past the
+    // "restaurants capped at 15, schools/mobile collapsed" defaults; the
+    // toggle listeners above catch schools/mobile up once actually opened.
+    syncRatingCheckboxesWithStorage(() => refresh({ forceExpand: false }));
   } catch (err) {
     console.error('Failed to load facility list.', err);
     statusEl.textContent = 'Unable to load facility data right now. Please try again later.';
