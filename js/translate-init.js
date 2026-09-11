@@ -71,6 +71,21 @@ function googleTranslateElementInit() {
     document.querySelectorAll('iframe:not([title])').forEach((frame) => {
       frame.title = 'Google Translate';
     });
+
+    // Google's "rate this translation" feedback prompt (shown when a user
+    // clicks into already-translated text) includes a handful of plain
+    // <input> fields (id="goog-gt-votingInput*") that just hold data its own
+    // script fills in when "Good/Poor translation" is clicked — not
+    // something a user types into directly — but they're never given an
+    // accessible name, so a screen-reader/keyboard user tabbing onto one
+    // just hears an unlabeled blank field (confirmed live via WAVE). Removed
+    // from the accessibility tree and tab order entirely rather than
+    // guessing at a label for an undocumented internal mechanism we don't
+    // control.
+    document.querySelectorAll('input[id^="goog-gt-votingInput"]:not([aria-hidden])').forEach((input) => {
+      input.setAttribute('aria-hidden', 'true');
+      input.setAttribute('tabindex', '-1');
+    });
   });
   frameObserver.observe(document.body, { childList: true, subtree: true });
 
