@@ -121,6 +121,21 @@ export async function queryMobileList(table, { nameFilter } = {}) {
 }
 
 /**
+ * Fetches every currently-selectable facility (restaurants + schools together,
+ * one row per firm at its latest inspection) with full attributes and geometry.
+ * Used by js/search.js to build its own in-memory, name-normalized suggestion
+ * index instead of a live per-keystroke service query — see that file for why.
+ */
+export async function queryAllCurrentFacilities(layer) {
+  const features = await queryAllPages(layer, {
+    where: '1=1',
+    outFields: ['*'],
+    returnGeometry: true
+  });
+  return dedupeToLatestPerFirm(features);
+}
+
+/**
  * AGOL's Map Viewer has no "latest record per group" filter option, so the map layer
  * otherwise draws one point per historical inspection row instead of one per place.
  * This queries every row across the whole table (both restaurants and schools, all

@@ -544,6 +544,25 @@ body {
   color: #6b7280;
 }
 
+.facility-back-to-nearby-btn {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 0.6rem;
+  padding: 0.15rem 0.1rem;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  cursor: pointer;
+}
+
+.facility-back-to-nearby-btn:hover {
+  text-decoration: underline;
+}
+
 .facility-feature-list {
   margin: 0;
   padding: 0;
@@ -624,6 +643,23 @@ body {
 .facility-nearby-meta {
   font-size: 0.78rem;
   color: #4a4a4a;
+}
+
+.facility-nearby-no-location {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--color-accent);
+}
+
+.facility-missing-location-note {
+  margin: 0 0 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-border-warm);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--color-accent);
 }
 
 .app-footer {

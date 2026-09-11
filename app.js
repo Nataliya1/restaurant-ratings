@@ -1,5 +1,6 @@
 import WebMap from 'https://js.arcgis.com/4.31/@arcgis/core/WebMap.js';
 import MapView from 'https://js.arcgis.com/4.31/@arcgis/core/views/MapView.js';
+import Extent from 'https://js.arcgis.com/4.31/@arcgis/core/geometry/Extent.js';
 import * as reactiveUtils from 'https://js.arcgis.com/4.31/@arcgis/core/core/reactiveUtils.js';
 import Basemap from 'https://js.arcgis.com/4.31/@arcgis/core/Basemap.js';
 import BasemapGallery from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/BasemapGallery.js';
@@ -10,6 +11,8 @@ import Features from 'https://js.arcgis.com/4.31/@arcgis/core/widgets/Features.j
 
 import { WEBMAP_ITEM_ID, RESTAURANT_LAYER_TITLE, NAME_FIELD_RESTAURANT, NEARBY_SEARCH_RADIUS_MILES } from './js/config.js';
 import { buildRestaurantDefinitionExpression } from './js/filters.js';
+import { syncRatingCheckboxesWithStorage } from './js/rating-filter-sync.js';
+import { loadMapViewState, saveMapViewState } from './js/map-view-state.js';
 import { queryLatestObjectIds } from './js/lists.js';
 import { createSearchWidget } from './js/search.js';
 import { setupHeader } from './js/header.js';
@@ -25,12 +28,31 @@ const webmap = new WebMap({
   }
 });
 
+// A plain browser refresh of this same page should behave like a fresh visit
+// (home extent, nothing selected) — only actually navigating to a different
+// page and back should bring the saved view state back. sessionStorage alone
+// can't tell those two apart (a refresh doesn't clear it), but the Navigation
+// Timing API can: performance's navigation entry reports "reload" for
+// F5/Ctrl+R/hard-refresh and "navigate" for a real cross-page visit (both
+// leaving and returning). Treating a reload as if nothing were stored also
+// means the save-on-interaction watches below start overwriting it again
+// right away, so it doesn't linger stale — the very next click or pan simply
+// becomes the new saved state.
+const isReload = performance.getEntriesByType('navigation')[0]?.type === 'reload';
+
+// Read once, synchronously, before the view is even constructed: passing a
+// restored extent straight into the MapView constructor is what lets a
+// returning visit land there directly, instead of flashing the web map's own
+// default extent first and then jumping.
+const storedViewState = isReload ? null : loadMapViewState();
+
 const view = new MapView({
   container,
   map: webmap,
   ui: {
     components: ['zoom', 'attribution']
-  }
+  },
+  ...(storedViewState?.extent ? { extent: Extent.fromJSON(storedViewState.extent) } : {})
 });
 
 const homeWidget = new Home({ view });
@@ -123,16 +145,82 @@ view.when(
       view,
       container: document.getElementById('facilityFeaturesContainer')
     });
+
+    // Set (alongside pendingBackToList) right before opening a facility that
+    // was picked off a choice list — either "nearby facilities" (address
+    // search with no exact match) or "multiple matches" (an ambiguous
+    // facility-name search) — see onNearbyFacilities/onMultipleMatches below
+    // — so the very next features-change this watch sees knows to show a
+    // "back to results" button. Reset once consumed by a real (non-empty)
+    // selection, so it doesn't linger onto some later, unrelated click or
+    // search that has nothing to do with that list. pendingBackToList holds a
+    // closure that just re-renders whichever list it was (renderNearbyList or
+    // renderMultipleMatches, each already bound to their own entries) rather
+    // than hardcoding one — selectFromChoiceList below builds it.
+    let nearbySelectPending = false;
+    let pendingBackToList = null;
+
     reactiveUtils.watch(
       () => view.popup.features,
-      (features) => facilityDetails.render(features)
+      (features) => {
+        const showBack = !!(features?.length && nearbySelectPending && pendingBackToList);
+        facilityDetails.render(features, {
+          onBackToNearby: showBack ? () => clearSelectionThenRender(pendingBackToList) : null
+        });
+        if (features?.length) nearbySelectPending = false;
+      }
     );
+
+    // Shared by onNearbyFacilities and onMultipleMatches below: builds the
+    // "render this list" closure and a selectFacility wrapper that, when
+    // called, stores that same closure as pendingBackToList before deferring
+    // to the real selectFacility — so picking an entry off either kind of
+    // list leaves a "back to results" link once its facility details are
+    // showing. renderList and wrapped reference each other (the list needs
+    // to hand its buttons the wrapped selector; the wrapped selector needs to
+    // hand back the exact list it came from) via ordinary closure, not
+    // execution order — wrapped is only ever called later, from a click.
+    function makeChoiceList(entries, renderFn, selectFacility) {
+      function wrapped(graphic) {
+        nearbySelectPending = true;
+        pendingBackToList = renderList;
+        selectFacility(graphic);
+      }
+      function renderList() {
+        renderFn(entries, { onSelect: wrapped });
+      }
+      return renderList;
+    }
+
+    // Set right before restoring a selection on load (below) so that one
+    // restored selection doesn't steal keyboard/screen-reader focus or
+    // trigger a live-region announcement the way a real click or search
+    // selection should — nothing the user did on *this* page load caused it.
+    let silentSelect = false;
 
     enhancePopupAccessibility(view, NAME_FIELD_RESTAURANT, {
       container: document.getElementById('detailsTabPanel'),
       emptyStateEl: document.getElementById('facilityDetailsEmpty'),
-      onSelect: infoPanel.showDetailsTab
+      onSelect: infoPanel.showDetailsTab,
+      consumeSilentSelect: () => {
+        if (!silentSelect) return false;
+        silentSelect = false;
+        return true;
+      }
     });
+
+    // Carries the map's extent across navigation to a different page (See
+    // List, ratings-explained, FAQ) and back — those are full page reloads,
+    // so this is the only way the map doesn't reset to its home extent every
+    // time. Keyed off view.stationary (true once panning/zooming settles)
+    // rather than every extent change, so a drag or zoom animation writes to
+    // sessionStorage once at the end instead of dozens of times mid-gesture.
+    reactiveUtils.watch(
+      () => view.stationary,
+      (stationary) => {
+        if (stationary && view.extent) saveMapViewState({ extent: view.extent.toJSON() });
+      }
+    );
 
     // Pans (without changing zoom) so the clicked feature stays centered in the
     // remaining map space next to the open info panel — fires on every
@@ -221,7 +309,6 @@ view.when(
     createSearchWidget({
       view,
       restaurantLayer,
-      latestIdsPromise,
       // An address search found nothing within a mile of it either — rare,
       // but still possible toward the county's edges.
       onNoFacilityFound: () => clearSelectionThenRender(() =>
@@ -232,15 +319,67 @@ view.when(
       // the map" instruction alone isn't usable for a screen-reader or
       // low-vision user, raised directly in conversation) rather than
       // requiring the map itself to find them.
-      onNearbyFacilities: (entries, selectFacility) => clearSelectionThenRender(() =>
-        facilityDetails.renderNearbyList(entries, { onSelect: selectFacility })
-      )
+      onNearbyFacilities: (entries, selectFacility) => {
+        clearSelectionThenRender(makeChoiceList(entries, facilityDetails.renderNearbyList, selectFacility));
+      },
+      // A facility-name search (typed and submitted directly, not picked
+      // from the suggestion dropdown) matched more than one facility — e.g.
+      // "early bird" matching "Early Bird", "Early Bird Brunch", etc. Same
+      // "real selectable list, don't guess" treatment as onNearbyFacilities.
+      onMultipleMatches: (entries, selectFacility, query) => {
+        const renderList = makeChoiceList(
+          entries,
+          (e, opts) => facilityDetails.renderMultipleMatches(e, { ...opts, query }),
+          selectFacility
+        );
+        clearSelectionThenRender(renderList);
+      }
     });
 
     function applyMapFilter() {
       restaurantLayer.definitionExpression = buildRestaurantDefinitionExpression(filterState);
     }
+
+    // Restore whatever rating filter was last set on this page or the See List
+    // page (they're separate page loads, so this is the only way the two stay
+    // in sync) before the first filter is applied, so the map doesn't briefly
+    // show every rating before snapping to the restored selection.
+    syncRatingCheckboxesWithStorage((restoredRatings) => {
+      filterState.ratings = restoredRatings;
+    });
     applyMapFilter();
+
+    // Carries the selected facility across navigation the same way the
+    // extent is carried above — saved here (after applyMapFilter, so a
+    // restored selection is queried under the same rating/type filter it'll
+    // actually be viewed under) as view.popup.features changes, whether from
+    // a click, a search result, or (below) restoring a previous selection.
+    reactiveUtils.watch(
+      () => view.popup.features,
+      (features) => {
+        const ids = (features || [])
+          .map((f) => f.attributes?.[restaurantLayer.objectIdField])
+          .filter((id) => id != null);
+        saveMapViewState({ selectedObjectIds: ids });
+      }
+    );
+
+    if (storedViewState?.selectedObjectIds?.length) {
+      restaurantLayer.queryFeatures({
+        objectIds: storedViewState.selectedObjectIds,
+        outFields: ['*'],
+        returnGeometry: true
+      }).then((result) => {
+        if (!result.features.length) return;
+        // queryFeatures()-returned graphics don't carry the layer's
+        // popupTemplate the way a click-driven hit-test result does (same
+        // gotcha js/search.js documents for its own queryFeatures() calls) —
+        // attach it explicitly before opening.
+        result.features.forEach((f) => { f.popupTemplate = restaurantLayer.popupTemplate; });
+        silentSelect = true;
+        view.popup.open({ features: result.features, location: result.features[0].geometry });
+      }).catch(() => {});
+    }
 
     latestIdsPromise.then(async ({ oidField, ids }) => {
       if (!ids.length) return;

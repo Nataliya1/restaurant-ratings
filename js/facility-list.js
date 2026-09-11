@@ -12,6 +12,7 @@ import { buildRatingClause } from './filters.js';
 import { queryFacilityList, queryMobileList } from './lists.js';
 import { toCsv, downloadCsv } from './csv.js';
 import { setupHeader } from './header.js';
+import { syncRatingCheckboxesWithStorage } from './rating-filter-sync.js';
 
 setupHeader();
 
@@ -363,6 +364,12 @@ function applyFilters({ nameQuery, ratingState }) {
       el.addEventListener('change', refresh);
     });
     nameFilterEl.addEventListener('input', refresh);
+
+    // Restore whatever rating filter was last set here or on the map page
+    // (separate page loads, so sessionStorage is the only way the two stay in
+    // sync), then reapply filtering/expansion immediately if that restored a
+    // non-default selection.
+    syncRatingCheckboxesWithStorage(() => refresh());
   } catch (err) {
     console.error('Failed to load facility list.', err);
     statusEl.textContent = 'Unable to load facility data right now. Please try again later.';

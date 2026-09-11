@@ -23,7 +23,7 @@ import * as reactiveUtils from 'https://js.arcgis.com/4.31/@arcgis/core/core/rea
  *   what's actually on screen, and stays populated even when a location has
  *   multiple stacked inspection records (same address, different dates) with no
  *   single stable title.
- * @param {{ container: HTMLElement, emptyStateEl: HTMLElement, onSelect: () => void }} options
+ * @param {{ container: HTMLElement, emptyStateEl: HTMLElement, onSelect: () => void, consumeSilentSelect?: () => boolean }} options
  *   container - the Facility Details tabpanel: focused and (re)labeled whenever
  *     the selected feature changes.
  *   emptyStateEl - placeholder text shown when nothing is selected; toggled
@@ -31,8 +31,15 @@ import * as reactiveUtils from 'https://js.arcgis.com/4.31/@arcgis/core/core/rea
  *   onSelect - called before focusing container, so the info panel is open and
  *     the Facility Details tab is active by the time focus/labeling happens
  *     (focusing a hidden element is a no-op).
+ *   consumeSilentSelect - checked (and, if true, reset) on every selection
+ *     change; when it returns true, the tab still switches and the panel still
+ *     gets its aria-label, but focus isn't stolen and nothing is announced.
+ *     Used for app.js's map-view-state restore on page load — a facility
+ *     re-selected automatically on load, with no user gesture behind it,
+ *     shouldn't yank keyboard/screen-reader focus into the details panel the
+ *     way a real click or search selection should.
  */
-export function enhancePopupAccessibility(view, nameField, { container, emptyStateEl, onSelect }) {
+export function enhancePopupAccessibility(view, nameField, { container, emptyStateEl, onSelect, consumeSilentSelect }) {
   const liveRegion = document.getElementById('popupLiveRegion');
   let lastFocused = null;
 
@@ -77,6 +84,7 @@ export function enhancePopupAccessibility(view, nameField, { container, emptySta
       onSelect();
       const label = currentLabel();
       container.setAttribute('aria-label', label);
+      if (consumeSilentSelect?.()) return;
       container.focus();
       if (liveRegion) liveRegion.textContent = `Showing details for ${label}.`;
     }
